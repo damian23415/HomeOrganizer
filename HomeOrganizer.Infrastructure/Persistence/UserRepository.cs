@@ -1,0 +1,26 @@
+﻿using System.Data;
+using Dapper;
+using HomeOrganizer.Application.Features.Repositories;
+using HomeOrganizer.Domain.Entities;
+
+namespace HomeOrganizer.Infrastructure.Persistence;
+
+public class UserRepository : IUserRepository
+{
+    private readonly IDbConnection _connection;
+    
+    public async Task<User?> GetByEmail(string email)
+    {
+        const string sql = "SELECT * FROM Users WHERE Email = @Email";
+        return await _connection.QuerySingleOrDefaultAsync<User>(sql, new { Email = email });
+    }
+
+    public async Task AddAsync(User user)
+    {
+        const string sql = @"INSERT INTO Users (Id, Email, PasswordHash, Created, IsActive, Role)
+                             VALUES (@Id, @Email, @PasswordHash, @CreatedAt, @IsActive, @Role)";
+        
+        user.Id = Guid.NewGuid();
+        await _connection.ExecuteAsync(sql, user);
+    }
+}
