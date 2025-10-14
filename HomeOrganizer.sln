@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeOrganizer.Infrastructur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeOrganizer.Tests", "HomeOrganizer.Tests\HomeOrganizer.Tests.csproj", "{A77E8EE5-0C45-4B33-BCDC-DABAC530C8B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeOrganizer.IntegrationTests", "HomeOrganizer.IntegrationTests\HomeOrganizer.IntegrationTests.csproj", "{D4AC9C31-2FEC-4F62-AF5F-048B2C24A161}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{A77E8EE5-0C45-4B33-BCDC-DABAC530C8B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A77E8EE5-0C45-4B33-BCDC-DABAC530C8B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A77E8EE5-0C45-4B33-BCDC-DABAC530C8B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4AC9C31-2FEC-4F62-AF5F-048B2C24A161}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4AC9C31-2FEC-4F62-AF5F-048B2C24A161}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4AC9C31-2FEC-4F62-AF5F-048B2C24A161}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4AC9C31-2FEC-4F62-AF5F-048B2C24A161}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
