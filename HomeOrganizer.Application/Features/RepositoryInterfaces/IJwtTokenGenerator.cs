@@ -1,6 +1,6 @@
 ﻿using HomeOrganizer.Domain.Entities;
 
-namespace HomeOrganizer.Application.Features.Repositories;
+namespace HomeOrganizer.Application.Features.RepositoryInterfaces;
 
 public interface IJwtTokenGenerator
 {

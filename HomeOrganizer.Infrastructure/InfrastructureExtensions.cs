@@ -1,6 +1,8 @@
 ﻿using System.Data;
 using HomeOrganizer.Application.Features.Repositories;
+using HomeOrganizer.Application.Features.RepositoryInterfaces;
 using HomeOrganizer.Infrastructure.Persistence;
+using HomeOrganizer.Infrastructure.Persistence.Migrations;
 using HomeOrganizer.Infrastructure.Security;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +21,8 @@ public static class InfrastructureExtensions
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
+        services.AddMigrations(connectionString!);
+        
         AddJwtSettings(services, configuration);
 
         return services;

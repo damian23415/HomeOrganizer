@@ -1,6 +1,10 @@
-﻿using HomeOrganizer.Application.Features.Users.Handlers;
+﻿using AutoMapper;
+using FluentValidation;
+using HomeOrganizer.Application.Features.Users.Handlers;
 using HomeOrganizer.Application.Features.Users.Interfaces;
+using HomeOrganizer.Application.Features.Users.Validators;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace HomeOrganizer.Application;
 
@@ -8,7 +12,19 @@ public static  class ApplicationExtensions
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddAutoMapper(typeof(Mapping.UserProfile));
+        services.AddSingleton<IMapper>(sp =>
+        {
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<Mapping.UserProfile>();
+            }, loggerFactory);
+        
+            return config.CreateMapper();
+        });
+
+        services.AddValidatorsFromAssemblyContaining<RegisterUserRequestValidator>();
 
         services.AddScoped<IUserRegistrationService, UserRegistrationService>();
         
