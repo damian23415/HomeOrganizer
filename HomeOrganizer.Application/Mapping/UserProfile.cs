@@ -6,10 +6,10 @@ namespace HomeOrganizer.Application.Mapping;
 
 public class UserProfile : Profile
 {
-    public UserProfile()
-    {
-        CreateMap<User, UserDto>();
-        CreateMap<RegisterUserRequest, User>()
-            .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
-    }
+  public UserProfile()
+  {
+    CreateMap<User, UserDto>();
+    CreateMap<RegisterUserRequest, User>()
+      .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
+  }
 }

@@ -4,5 +4,5 @@ namespace HomeOrganizer.Application.Features.RepositoryInterfaces;
 
 public interface IJwtTokenGenerator
 {
-    string GenerateToken(User user);
+  string GenerateToken(User user);
 }

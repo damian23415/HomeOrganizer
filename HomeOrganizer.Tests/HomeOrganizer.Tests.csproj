@@ -7,24 +7,24 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AutoMapper" Version="15.0.1" />
-      <PackageReference Include="FluentAssertions" Version="8.7.1" />
-      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
-      <PackageReference Include="Moq" Version="4.20.72" />
-      <PackageReference Include="NUnit" Version="4.4.0" />
-      <PackageReference Include="NUnit3TestAdapter" Version="5.2.0" />
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
+        <PackageReference Include="AutoMapper" Version="15.0.1"/>
+        <PackageReference Include="FluentAssertions" Version="8.7.1"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0"/>
+        <PackageReference Include="Moq" Version="4.20.72"/>
+        <PackageReference Include="NUnit" Version="4.4.0"/>
+        <PackageReference Include="NUnit3TestAdapter" Version="5.2.0"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\HomeOrganizer.Application\HomeOrganizer.Application.csproj" />
-      <ProjectReference Include="..\HomeOrganizer.Infrastructure\HomeOrganizer.Infrastructure.csproj" />
+        <ProjectReference Include="..\HomeOrganizer.Application\HomeOrganizer.Application.csproj"/>
+        <ProjectReference Include="..\HomeOrganizer.Infrastructure\HomeOrganizer.Infrastructure.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\HomeOrganizer.Api\appsettings.json">
-        <Link>appsettings.json</Link>
-      </Content>
+        <Content Include="..\HomeOrganizer.Api\appsettings.json">
+            <Link>appsettings.json</Link>
+        </Content>
     </ItemGroup>
 
 </Project>

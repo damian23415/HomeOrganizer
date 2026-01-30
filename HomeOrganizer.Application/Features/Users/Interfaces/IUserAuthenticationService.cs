@@ -2,7 +2,7 @@
 
 namespace HomeOrganizer.Application.Features.Users.Interfaces;
 
-public interface IUserRegistrationService
+public interface IUserAuthenticationService
 {
-  Task<RegisterUserResponse> RegisterAsync(RegisterUserRequest request);
+  Task<LoginResponse> LoginAsync(LoginRequest request);
 }

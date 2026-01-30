@@ -3,31 +3,31 @@ using FluentValidation;
 using HomeOrganizer.Application.Features.Users.Handlers;
 using HomeOrganizer.Application.Features.Users.Interfaces;
 using HomeOrganizer.Application.Features.Users.Validators;
+using HomeOrganizer.Application.Mapping;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace HomeOrganizer.Application;
 
-public static  class ApplicationExtensions
+public static class ApplicationExtensions
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+  public static IServiceCollection AddApplication(this IServiceCollection services)
+  {
+    services.AddSingleton<IMapper>(sp =>
     {
-        services.AddSingleton<IMapper>(sp =>
-        {
-            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+      var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
 
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<Mapping.UserProfile>();
-            }, loggerFactory);
-        
-            return config.CreateMapper();
-        });
+      var config = new MapperConfiguration(cfg => { cfg.AddProfile<UserProfile>(); }, loggerFactory);
 
-        services.AddValidatorsFromAssemblyContaining<RegisterUserRequestValidator>();
+      return config.CreateMapper();
+    });
 
-        services.AddScoped<IUserRegistrationService, UserRegistrationService>();
-        
-        return services;
-    }
+    services.AddValidatorsFromAssemblyContaining<RegisterUserRequestValidator>();
+    services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
+
+    services.AddScoped<IUserRegistrationService, UserRegistrationService>();
+    services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
+
+    return services;
+  }
 }
