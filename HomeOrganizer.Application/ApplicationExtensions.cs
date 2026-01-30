@@ -3,6 +3,9 @@ using FluentValidation;
 using HomeOrganizer.Application.Features.Users.Handlers;
 using HomeOrganizer.Application.Features.Users.Interfaces;
 using HomeOrganizer.Application.Features.Users.Validators;
+using HomeOrganizer.Application.Features.WorkTracking.Handlers;
+using HomeOrganizer.Application.Features.WorkTracking.Interfaces;
+using HomeOrganizer.Application.Features.WorkTracking.Validators;
 using HomeOrganizer.Application.Mapping;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,16 +20,22 @@ public static class ApplicationExtensions
     {
       var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
 
-      var config = new MapperConfiguration(cfg => { cfg.AddProfile<UserProfile>(); }, loggerFactory);
+      var config = new MapperConfiguration(cfg =>
+      {
+        cfg.AddProfile<UserProfile>();
+        cfg.AddProfile<HourlyRatePeriodProfile>();
+      }, loggerFactory);
 
       return config.CreateMapper();
     });
 
     services.AddValidatorsFromAssemblyContaining<RegisterUserRequestValidator>();
     services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
+    services.AddValidatorsFromAssemblyContaining<HourlyRateValidator>();
 
     services.AddScoped<IUserRegistrationService, UserRegistrationService>();
     services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
+    services.AddScoped<IHourlyRateService, HourlyRateService>();
 
     return services;
   }

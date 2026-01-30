@@ -3,6 +3,8 @@ using HomeOrganizer.Application.Features.Repositories;
 using HomeOrganizer.Application.Features.RepositoryInterfaces;
 using HomeOrganizer.Infrastructure.Persistence;
 using HomeOrganizer.Infrastructure.Persistence.Migrations;
+using HomeOrganizer.Infrastructure.Persistence.Repositories;
+using HomeOrganizer.Infrastructure.Persistence.Repositories.WorkTracking;
 using HomeOrganizer.Infrastructure.Security;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +20,7 @@ public static class InfrastructureExtensions
 
     services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionString));
     services.AddScoped<IUserRepository, UserRepository>();
+    services.AddScoped<IHourlyRateRepository, HourlyRateRepository>();
     services.AddScoped<IPasswordHasher, PasswordHasher>();
     services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 

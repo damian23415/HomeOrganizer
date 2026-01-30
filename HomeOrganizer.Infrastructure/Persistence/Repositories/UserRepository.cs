@@ -3,7 +3,7 @@ using Dapper;
 using HomeOrganizer.Application.Features.RepositoryInterfaces;
 using HomeOrganizer.Domain.Entities;
 
-namespace HomeOrganizer.Infrastructure.Persistence;
+namespace HomeOrganizer.Infrastructure.Persistence.Repositories;
 
 public class UserRepository(IDbConnection connection) : IUserRepository
 {
