@@ -52,5 +52,78 @@ public static class WorkTrackingEndpoints
       })
       .RequireAuthorization()
       .WithName("CreateHourlyRate");
+    
+    group.MapPost("workDay", async (
+        CreateWorkDayRequest request,
+        IValidator<CreateWorkDayRequest> validator,
+        IWorkDayService workDayService,
+        HttpContext httpContext) =>
+    {
+      var validationResult = await validator.ValidateAsync(request);
+      
+      if (!validationResult.IsValid)
+        return Results.BadRequest(new ErrorResponse
+        {
+          Message = "Błąd walidacji danych",
+          Errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList()
+        });
+
+      try
+      {
+        var userId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                                ?? throw new UnauthorizedAccessException("Użytkownik niezalogowany"));
+        
+        var result = await workDayService.CreateWorkDayAsync(request, userId);
+        return Results.Ok(result);
+      }
+      catch (UnauthorizedAccessException ex)
+      {
+        var error = new ErrorResponse()
+        {
+          Message = ex.Message,
+        };
+          
+        return Results.Json(error, statusCode: 401);
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine(e);
+        throw;
+      }
+    })
+    .RequireAuthorization()
+    .WithName("CreateWorkDay");
+
+    group.MapGet("workDays/{year:int}/{month:int}", async (
+        int year,
+        int month,
+        IWorkDayService workDayService,
+        HttpContext httpContext) =>
+      {
+        try
+        {
+          var userId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                                  ?? throw new UnauthorizedAccessException("Użytkownik niezalogowany"));
+
+          var result = await workDayService.GetWorkDaysByMonthAsync(year, month, userId);
+          return Results.Ok(result);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+          var error = new ErrorResponse()
+          {
+            Message = ex.Message,
+          };
+
+          return Results.Json(error, statusCode: 401);
+        }
+        catch (Exception e)
+        {
+          Console.WriteLine(e);
+          throw;
+        }
+      })
+      .RequireAuthorization()
+      .WithName("GetWorkDaysByMonth");
   }
 }

@@ -21,6 +21,7 @@ public static class InfrastructureExtensions
     services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionString));
     services.AddScoped<IUserRepository, UserRepository>();
     services.AddScoped<IHourlyRateRepository, HourlyRateRepository>();
+    services.AddScoped<IWorkDayRepository, WorkDayRepository>();
     services.AddScoped<IPasswordHasher, PasswordHasher>();
     services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 

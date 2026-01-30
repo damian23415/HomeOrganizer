@@ -24,6 +24,7 @@ public static class ApplicationExtensions
       {
         cfg.AddProfile<UserProfile>();
         cfg.AddProfile<HourlyRatePeriodProfile>();
+        cfg.AddProfile<WorkDayProfile>();
       }, loggerFactory);
 
       return config.CreateMapper();
@@ -32,10 +33,12 @@ public static class ApplicationExtensions
     services.AddValidatorsFromAssemblyContaining<RegisterUserRequestValidator>();
     services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
     services.AddValidatorsFromAssemblyContaining<HourlyRateValidator>();
+    services.AddValidatorsFromAssemblyContaining<WorkDayValidator>();
 
     services.AddScoped<IUserRegistrationService, UserRegistrationService>();
     services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
     services.AddScoped<IHourlyRateService, HourlyRateService>();
+    services.AddScoped<IWorkDayService, WorkDayService>();
 
     return services;
   }

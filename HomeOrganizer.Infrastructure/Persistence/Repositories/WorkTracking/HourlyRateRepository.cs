@@ -10,13 +10,12 @@ public class HourlyRateRepository(IDbConnection dbConnection) : IHourlyRateRepos
   public async Task<HourlyRatePeriod?> GetAsync(Guid userId, DateTime currentDate)
   {
     const string sql = @"
-      SELECT *
+      SELECT TOP 1 *
       FROM HourlyRatePeriods
       WHERE UserId = @UserId
-        AND StartDate <= @CurrentDate
-        AND (EndDate IS NULL OR EndDate >= @CurrentDate)
-      ORDER BY StartDate DESC
-      LIMIT 1;";
+        AND EffectiveFrom <= @CurrentDate
+        AND (EffectiveTo IS NULL OR EffectiveTo >= @CurrentDate)
+      ORDER BY EffectiveFrom DESC";
 
     return await dbConnection.QuerySingleOrDefaultAsync<HourlyRatePeriod>(sql,
       new { UserId = userId, CurrentDate = currentDate });
