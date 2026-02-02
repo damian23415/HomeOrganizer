@@ -15,6 +15,17 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApi();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowVueApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = Encoding.ASCII.GetBytes(jwtSettings["Secret"]!);
 
@@ -44,6 +55,7 @@ app.Services.RunMigrations(builder.Configuration);
 app.UseErrorHandling();
 app.MapOpenApi();
 
+app.UseCors("AllowVueApp");
 app.UseAuthentication();
 app.UseAuthorization();
 

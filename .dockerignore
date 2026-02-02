@@ -1,0 +1,22 @@
+# .dockerignore
+
+# Binaries
+**/bin/
+**/obj/
+
+# Tests - nie deployujemy
+**/HomeOrganizer.Tests/
+**/HomeOrganizer.IntegrationTests/
+
+# IDE
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Inne
+**/appsettings.Development.json
+**/launchSettings.json
+.git/
+.gitignore
+*.md

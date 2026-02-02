@@ -7,10 +7,6 @@ public class WorkDayValidator : AbstractValidator<CreateWorkDayRequest>
 {
   public WorkDayValidator()
   {
-    RuleFor(x => x.Date)
-      .NotEmpty().WithMessage("Data jest wymagana")
-      .LessThanOrEqualTo(DateTime.Now.Date).WithMessage("Data nie może być w przyszłości");
-
     RuleFor(x => x.StartTime)
       .NotEmpty().WithMessage("Godzina rozpoczęcia jest wymagana");
 

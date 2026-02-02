@@ -56,7 +56,6 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-// Props - dane z rodzica
 const props = defineProps({
   date: {
     type: Date,
@@ -64,61 +63,68 @@ const props = defineProps({
   }
 })
 
-// Emit - wysyłanie eventów do rodzica
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'save'])
 
-// Stan formularza
 const startTime = ref('')
 const endTime = ref('')
-const hourlyRate = ref(100) // Na razie na sztywno, później z API
+const hourlyRate = ref(100)
 
-// Sformatowana data do wyświetlenia w nagłówku
 const formattedDate = computed(() => {
-    return props.date?.toLocaleDateString('pl-PL', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
+  return props.date?.toLocaleDateString('pl-PL', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
 })
 
-// Metody
+// ⬇️ SPRAWDŹ CZY TA FUNKCJA ISTNIEJE!
+const combineDateAndTime = (date, timeString) => {
+  const [hours, minutes] = timeString.split(':')
+  const dateTime = new Date(date)
+  dateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0)
+  
+  const isoString = dateTime.toISOString()
+  console.log(`🕐 combineDateAndTime: ${timeString} → ${isoString}`) // DEBUG
+  
+  return isoString
+}
+
 const closeModal = () => {
-    emit('close')
+  emit('close')
 }
 
 const handleSave = () => {
-    // Walidacja
-    if (!startTime.value || !endTime.value) {
-        alert('Proszę wprowadzić godziny rozpoczęcia i zakończenia pracy.');
-        return;
-    }
-
-    // Sprawdzenie czy czas jest poprawny
-    const [startHour, startMinute] = startTime.value.split(':').map(Number);
-    const [endHour, endMinute] = endTime.value.split(':').map(Number);
-    const startInMinutes = startHour * 60 + startMinute;
-    const endInMinutes = endHour * 60 + endMinute;
-
-    if (endInMinutes <= startInMinutes) {
-        alert('Godzina zakończenia musi być późniejsza niż godzina rozpoczęcia.');
-        return;
-    }
-
-    // Przygotowanie danych do wysłania
-    const workData = {
-        date: props.date.toISOString().split('T')[0], // Format YYYY-MM-DD
-        startTime: startTime.value,
-        endTime: endTime.value,
-    }
-
-    console.log('📤 Wysyłam do API:', workData)
+  if (!startTime.value || !endTime.value) {
+    alert('Proszę wypełnić wszystkie pola')
+    return
+  }
   
-    // Wyślij dane do rodzica
-    emit('save', workData)
-
-    // Zamknij modal
-    closeModal()
+  const [startHour, startMinute] = startTime.value.split(':').map(Number)
+  const [endHour, endMinute] = endTime.value.split(':').map(Number)
+  const startInMinutes = startHour * 60 + startMinute
+  const endInMinutes = endHour * 60 + endMinute
+  
+  if (endInMinutes <= startInMinutes) {
+    alert('Godzina zakończenia musi być późniejsza niż rozpoczęcia')
+    return
+  }
+  
+  // ⬇️ SPRAWDŹ CZY TO SIĘ WYKONUJE!
+  console.log('📝 props.date:', props.date)
+  console.log('📝 startTime.value:', startTime.value)
+  console.log('📝 endTime.value:', endTime.value)
+  
+  const workData = {
+    Date: props.date.toISOString(),
+    StartTime: combineDateAndTime(props.date, startTime.value),
+    EndTime: combineDateAndTime(props.date, endTime.value)
+  }
+  
+  console.log('📤 Wysyłam do API (po konwersji):', workData)
+  
+  emit('save', workData)
+  closeModal()
 }
 </script>
 
