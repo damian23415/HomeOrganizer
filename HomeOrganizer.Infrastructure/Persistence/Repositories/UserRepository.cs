@@ -18,7 +18,6 @@ public class UserRepository(IDbConnection connection) : IUserRepository
     const string sql = @"INSERT INTO ""Users"" (""Id"", ""Email"", ""PasswordHash"", ""Created"", ""IsActive"", ""Role"")
                              VALUES (@Id, @Email, @PasswordHash, @Created, @IsActive, @Role)";
 
-    user.Id = Guid.NewGuid();
     await connection.ExecuteAsync(sql, user);
   }
 }

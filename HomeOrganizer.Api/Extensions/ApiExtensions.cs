@@ -6,6 +6,7 @@ namespace HomeOrganizer.Api.Extensions;
 
 public static class ApiExtensions
 {
+  public const string CorsPolicyName = "AllowedOrigins";
   public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
   {
     services.AddOpenApi();

@@ -6,18 +6,15 @@ namespace HomeOrganizer.Api.Middleware;
 
 public class ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandlingMiddleware> logger)
 {
-  private readonly ILogger<ErrorHandlingMiddleware> _logger = logger;
-  private readonly RequestDelegate _next = next;
-
   public async Task InvokeAsync(HttpContext context)
   {
     try
     {
-      await _next(context);
+      await next(context);
     }
     catch (Exception ex)
     {
-      _logger.LogError(ex, "Wystąpił błąd podczas przetwarzania żądania");
+      logger.LogError(ex, "An error occurred while processing the request.");
       await HandleExceptionAsync(context, ex);
     }
   }
@@ -26,7 +23,7 @@ public class ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandling
   {
     var errorResponse = new ErrorResponse
     {
-      Message = "Wystąpił błąd podczas przetwarzania żądania.",
+      Message = "An error occurred while processing the request.",
       Errors = [exception.Message]
     };
 

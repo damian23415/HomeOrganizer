@@ -5,7 +5,7 @@ namespace HomeOrganizer.Api.Filters;
 
 public class CurrentUserFilter : IEndpointFilter
 {
-  public ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
+  public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
   {
     var httpContext = context.HttpContext;
     

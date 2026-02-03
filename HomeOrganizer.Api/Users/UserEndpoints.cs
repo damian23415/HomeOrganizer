@@ -1,5 +1,4 @@
 ﻿using System.Security.Authentication;
-using FluentValidation;
 using HomeOrganizer.Api.Extensions;
 using HomeOrganizer.Application.Common.Models;
 using HomeOrganizer.Application.Features.Users.Dtos;
@@ -17,16 +16,8 @@ public static class UserEndpoints
         RegisterUserRequest request,
         IUserRegistrationService userRegistrationService) =>
       {
-        try
-        {
-          var result = await userRegistrationService.RegisterAsync(request);
-          return Results.Ok(result);
-        }
-        catch (Exception e)
-        {
-          Console.WriteLine(e);
-          throw;
-        }
+        var result = await userRegistrationService.RegisterAsync(request);
+        return Results.Ok(result);
       })
       .WithValidation<RegisterUserRequest>()
       .WithName("RegisterUser");
@@ -48,11 +39,6 @@ public static class UserEndpoints
           };
           
           return Results.Json(error, statusCode: 401);
-        }
-        catch (Exception e)
-        {
-          Console.WriteLine(e);
-          throw;
         }
       })
       .WithValidation<LoginRequest>()

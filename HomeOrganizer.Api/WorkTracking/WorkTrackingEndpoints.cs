@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using FluentValidation;
-using HomeOrganizer.Api.Extensions;
+﻿using HomeOrganizer.Api.Extensions;
 using HomeOrganizer.Application.Common.Models;
 using HomeOrganizer.Application.Features.WorkTracking.Dtos;
 using HomeOrganizer.Application.Features.WorkTracking.Interfaces;
@@ -34,11 +32,6 @@ public static class WorkTrackingEndpoints
           
           return Results.Json(error, statusCode: 401);
         }
-        catch (Exception e)
-        {
-          Console.WriteLine(e);
-          throw;
-        }
       })
       .WithValidation<CreateHourlyRateRequest>()
       .WithCurrentUser()
@@ -64,11 +57,6 @@ public static class WorkTrackingEndpoints
         };
           
         return Results.Json(error, statusCode: 401);
-      }
-      catch (Exception e)
-      {
-        Console.WriteLine(e);
-        throw;
       }
     })
     .WithValidation<CreateWorkDayRequest>()
@@ -96,11 +84,6 @@ public static class WorkTrackingEndpoints
           };
 
           return Results.Json(error, statusCode: 401);
-        }
-        catch (Exception e)
-        {
-          Console.WriteLine(e);
-          throw;
         }
       })
       .WithCurrentUser()

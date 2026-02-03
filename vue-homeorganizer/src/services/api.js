@@ -78,6 +78,13 @@ export const authApi = {
       body: JSON.stringify(credentials),
     })
   },
+
+  register: async (credentials) => {
+    return request('/users/register', {
+      method: 'POST',
+      body: JSON.stringify(credentials)
+    })
+  }
 }
 
 // ==========================================

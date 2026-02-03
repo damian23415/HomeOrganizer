@@ -37,6 +37,10 @@
           <span v-if="loading">Logowanie...</span>
           <span v-else>🔐 Zaloguj się</span>
         </button>
+
+        <button type="button" class="login-btn" :disabled="loading" @click="goToRegister">
+          <span>Zarejestruj się</span>
+        </button>
       </form>
     </div>
   </div>
@@ -93,6 +97,10 @@ const handleLogin = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const goToRegister = () => {
+  router.push('/register')
 }
 </script>
 
