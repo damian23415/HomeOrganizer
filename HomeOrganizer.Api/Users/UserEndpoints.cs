@@ -1,10 +1,11 @@
 ﻿using System.Security.Authentication;
 using FluentValidation;
+using HomeOrganizer.Api.Extensions;
 using HomeOrganizer.Application.Common.Models;
 using HomeOrganizer.Application.Features.Users.Dtos;
 using HomeOrganizer.Application.Features.Users.Interfaces;
 
-namespace HomeOrganizer.Api.User;
+namespace HomeOrganizer.Api.Users;
 
 public static class UserEndpoints
 {
@@ -14,18 +15,8 @@ public static class UserEndpoints
 
     group.MapPost("register", async (
         RegisterUserRequest request,
-        IValidator<RegisterUserRequest> validator,
         IUserRegistrationService userRegistrationService) =>
       {
-        var validationResult = await validator.ValidateAsync(request);
-
-        if (!validationResult.IsValid)
-          return Results.BadRequest(new ErrorResponse
-          {
-            Message = "Błąd walidacji danych",
-            Errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList()
-          });
-
         try
         {
           var result = await userRegistrationService.RegisterAsync(request);
@@ -37,24 +28,13 @@ public static class UserEndpoints
           throw;
         }
       })
+      .WithValidation<RegisterUserRequest>()
       .WithName("RegisterUser");
 
     group.MapPost("login", async (
         LoginRequest request,
-        IValidator<LoginRequest> validator,
         IUserAuthenticationService userAuthenticationService) =>
       {
-        var validationResult = await validator.ValidateAsync(request);
-
-        if (!validationResult.IsValid)
-        {
-          return Results.BadRequest(new ErrorResponse
-          {
-            Message = "Błąd walidacji danych",
-            Errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList()
-          });
-        }
-
         try
         {
           var result = await userAuthenticationService.LoginAsync(request);
@@ -75,6 +55,7 @@ public static class UserEndpoints
           throw;
         }
       })
+      .WithValidation<LoginRequest>()
       .WithName("LoginUser");
   }
 }

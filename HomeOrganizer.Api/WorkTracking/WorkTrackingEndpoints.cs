@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using FluentValidation;
+using HomeOrganizer.Api.Extensions;
 using HomeOrganizer.Application.Common.Models;
 using HomeOrganizer.Application.Features.WorkTracking.Dtos;
 using HomeOrganizer.Application.Features.WorkTracking.Interfaces;
@@ -14,25 +15,14 @@ public static class WorkTrackingEndpoints
 
     group.MapPost("hourlyRate", async (
         CreateHourlyRateRequest request,
-        IValidator<CreateHourlyRateRequest> validator,
         IHourlyRateService hourlyRateService,
         HttpContext httpContext) =>
       {
-        var validationResult = await validator.ValidateAsync(request);
-
-        if (!validationResult.IsValid)
-          return Results.BadRequest(new ErrorResponse
-          {
-            Message = "Błąd walidacji danych",
-            Errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList()
-          });
-
         try
         {
-          var userId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                                  ?? throw new UnauthorizedAccessException("Użytkownik niezalogowany"));
-
+          var userId = httpContext.GetCurrentUserId();
           var result = await hourlyRateService.CreateHourlyRateAsync(request, userId);
+          
           return Results.Ok(result);
         }
         catch (UnauthorizedAccessException ex)
@@ -50,30 +40,20 @@ public static class WorkTrackingEndpoints
           throw;
         }
       })
-      .RequireAuthorization()
+      .WithValidation<CreateHourlyRateRequest>()
+      .WithCurrentUser()
       .WithName("CreateHourlyRate");
     
     group.MapPost("workDay", async (
         CreateWorkDayRequest request,
-        IValidator<CreateWorkDayRequest> validator,
         IWorkDayService workDayService,
         HttpContext httpContext) =>
     {
-      var validationResult = await validator.ValidateAsync(request);
-      
-      if (!validationResult.IsValid)
-        return Results.BadRequest(new ErrorResponse
-        {
-          Message = "Błąd walidacji danych",
-          Errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList()
-        });
-
       try
       {
-        var userId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                                ?? throw new UnauthorizedAccessException("Użytkownik niezalogowany"));
-        
+        var userId = httpContext.GetCurrentUserId();
         var result = await workDayService.CreateWorkDayAsync(request, userId);
+        
         return Results.Ok(result);
       }
       catch (UnauthorizedAccessException ex)
@@ -91,7 +71,8 @@ public static class WorkTrackingEndpoints
         throw;
       }
     })
-    .RequireAuthorization()
+    .WithValidation<CreateWorkDayRequest>()
+    .WithCurrentUser()
     .WithName("CreateWorkDay");
 
     group.MapGet("workDays/{year:int}/{month:int}", async (
@@ -102,10 +83,9 @@ public static class WorkTrackingEndpoints
       {
         try
         {
-          var userId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                                  ?? throw new UnauthorizedAccessException("Użytkownik niezalogowany"));
-
+          var userId = httpContext.GetCurrentUserId();
           var result = await workDayService.GetWorkDaysByMonthAsync(year, month, userId);
+          
           return Results.Ok(result);
         }
         catch (UnauthorizedAccessException ex)
@@ -123,7 +103,7 @@ public static class WorkTrackingEndpoints
           throw;
         }
       })
-      .RequireAuthorization()
+      .WithCurrentUser()
       .WithName("GetWorkDaysByMonth");
   }
 }

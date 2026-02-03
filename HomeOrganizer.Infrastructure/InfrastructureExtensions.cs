@@ -1,7 +1,6 @@
 ﻿using System.Data;
 using HomeOrganizer.Application.Features.Repositories;
 using HomeOrganizer.Application.Features.RepositoryInterfaces;
-using HomeOrganizer.Infrastructure.Persistence;
 using HomeOrganizer.Infrastructure.Persistence.Migrations;
 using HomeOrganizer.Infrastructure.Persistence.Repositories;
 using HomeOrganizer.Infrastructure.Persistence.Repositories.WorkTracking;
@@ -23,19 +22,18 @@ public static class InfrastructureExtensions
     services.AddScoped<IHourlyRateRepository, HourlyRateRepository>();
     services.AddScoped<IWorkDayRepository, WorkDayRepository>();
     services.AddScoped<IPasswordHasher, PasswordHasher>();
-    services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
     services.AddMigrations(connectionString!);
-
-    AddJwtSettings(services, configuration);
+    AddJwtServices(services, configuration);
 
     return services;
   }
 
-  private static void AddJwtSettings(this IServiceCollection services, IConfiguration configuration)
+  private static void AddJwtServices(this IServiceCollection services, IConfiguration configuration)
   {
     var jwtSettings = new JwtSettings();
     configuration.GetSection("Jwt").Bind(jwtSettings);
+    
     services.AddSingleton(jwtSettings);
     services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
   }
