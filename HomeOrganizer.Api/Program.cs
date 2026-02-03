@@ -51,7 +51,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-app.Services.RunMigrations(builder.Configuration);
+app.Services.RunMigrations();
 app.UseErrorHandling();
 app.MapOpenApi();
 

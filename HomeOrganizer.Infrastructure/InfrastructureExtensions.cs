@@ -6,7 +6,7 @@ using HomeOrganizer.Infrastructure.Persistence.Migrations;
 using HomeOrganizer.Infrastructure.Persistence.Repositories;
 using HomeOrganizer.Infrastructure.Persistence.Repositories.WorkTracking;
 using HomeOrganizer.Infrastructure.Security;
-using Microsoft.Data.SqlClient;
+using Npgsql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,7 +18,7 @@ public static class InfrastructureExtensions
   {
     var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-    services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionString));
+    services.AddScoped<IDbConnection>(sp => new NpgsqlConnection(connectionString));
     services.AddScoped<IUserRepository, UserRepository>();
     services.AddScoped<IHourlyRateRepository, HourlyRateRepository>();
     services.AddScoped<IWorkDayRepository, WorkDayRepository>();

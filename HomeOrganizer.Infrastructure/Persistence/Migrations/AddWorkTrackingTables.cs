@@ -1,8 +1,8 @@
-﻿using FluentMigrator;
+﻿﻿using FluentMigrator;
 
 namespace HomeOrganizer.Infrastructure.Persistence.Migrations;
 
-[Migration(20260130)]
+[Migration(2026013001)]
 public class AddWorkTrackingTables : Migration
 {
   public const string HourlyRatePeriods = nameof(HourlyRatePeriods);
