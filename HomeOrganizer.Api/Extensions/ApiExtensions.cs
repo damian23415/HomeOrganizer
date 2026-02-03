@@ -30,7 +30,7 @@ public static class ApiExtensions
         }
         else
         {
-          policy.WithOrigins("http://localhost:5173");
+          policy.WithOrigins("http://localhost:5087");
         }
 
         policy.AllowAnyHeader()
