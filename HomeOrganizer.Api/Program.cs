@@ -23,7 +23,7 @@ builder.Services.AddCors(options =>
                 "https://home-organizer-eight.vercel.app",
                 "https://homeorganizer-production.up.railway.app")
               .AllowAnyHeader()
-              .AllowAnyMethod()
+              .AllowAnyMethod() 
               .AllowCredentials();
     });
 });
