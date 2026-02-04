@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import MainLayout from '@/layouts/MainLayout.vue'
 import CalendarView from '../views/CalendarView.vue'
 import LoginView from '../views/LoginView.vue'  // ⬅️ MUSISZ MIEĆ!
 import RegisterView from '@/views/RegisterView.vue'
@@ -19,9 +20,24 @@ const routes = [
   },
   {
     path: '/',
-    name: 'Calendar',
-    component: CalendarView,
-    meta: { requiresAuth: true }
+    component: MainLayout,
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '',
+        redirect: '/work-log'
+      },
+      {
+        path: 'work-log',
+        name: 'WorkLog',
+        component: CalendarView,
+        meta: {
+          requiresAuth: true,
+          section: 'PRACA',
+          title: 'Work Log'
+        }
+      }
+    ]
   }
 ]
 

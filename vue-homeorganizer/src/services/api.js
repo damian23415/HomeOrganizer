@@ -110,7 +110,17 @@ export const workTimeApi = {
   },
 }
 
+export const hourlyRateApi = {
+  // pobierz dane o aktualnej stawce
+  getHourlyRate: async () => {
+    const today = new Date().toISOString().split('T')[0]
+    
+    return request(`/worktracking/hourlyRate/${today}`)
+  }
+}
+
 export default {
   auth: authApi,
   workTime: workTimeApi,
+  hourlyRate: hourlyRateApi
 }
