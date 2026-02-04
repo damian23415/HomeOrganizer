@@ -55,6 +55,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import api from '@/services/api'
 
 const props = defineProps({
   date: {
@@ -78,7 +79,6 @@ const formattedDate = computed(() => {
   })
 })
 
-// ⬇️ SPRAWDŹ CZY TA FUNKCJA ISTNIEJE!
 const combineDateAndTime = (date, timeString) => {
   const [hours, minutes] = timeString.split(':')
   const dateTime = new Date(date)
@@ -109,11 +109,6 @@ const handleSave = () => {
     alert('Godzina zakończenia musi być późniejsza niż rozpoczęcia')
     return
   }
-  
-  // ⬇️ SPRAWDŹ CZY TO SIĘ WYKONUJE!
-  console.log('📝 props.date:', props.date)
-  console.log('📝 startTime.value:', startTime.value)
-  console.log('📝 endTime.value:', endTime.value)
   
   const workData = {
     Date: props.date.toISOString(),

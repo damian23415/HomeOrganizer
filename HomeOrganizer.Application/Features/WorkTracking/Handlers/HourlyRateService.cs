@@ -9,8 +9,14 @@ public class HourlyRateService(IHourlyRateRepository hourlyRateRepository, IMapp
 {
   public async Task<HourlyRateResponse> CreateHourlyRateAsync(CreateHourlyRateRequest request, Guid userId)
   {
+    var actualDate = await hourlyRateRepository.GetAsync(userId, request.StartDate);
+    
+    if (actualDate != null)
+      throw new InvalidOperationException("An hourly rate already exists for the given date");
+    
     var entity = mapper.Map<Domain.Entities.HourlyRatePeriod>(request);
     entity.UserId = userId;
+    
     
     await hourlyRateRepository.AddAsync(entity);
     return mapper.Map<HourlyRateResponse>(entity);

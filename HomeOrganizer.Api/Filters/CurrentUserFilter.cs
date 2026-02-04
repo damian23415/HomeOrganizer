@@ -13,14 +13,14 @@ public class CurrentUserFilter : IEndpointFilter
     
     if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
     {
-      return ValueTask.FromResult<object?>(Results.Json(new ErrorResponse
+      return Results.Json(new ErrorResponse
       {
         Message = "User authentication failed"
-      }, statusCode: 401));
+      }, statusCode: 401);
     }
     
     httpContext.Items["UserId"] = userId;
 
-    return ValueTask.FromResult<object?>(next(context));
+    return await next(context);
   }
 }
