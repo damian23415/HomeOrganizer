@@ -36,7 +36,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import SideBar from '../components/SideBar.vue'
+import SideBar from '@/components/SideBar.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
