@@ -67,6 +67,13 @@ const menuSections = ref([
         icon: '📅',
         path: '/work-log',
         disabled: false
+      },
+      {
+        id: 'hourly-rates',
+        title: 'Stawki',
+        icon: '💰',
+        path: '/hourly-rates',
+        disabled: false
       }
     ]
   },

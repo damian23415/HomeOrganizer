@@ -22,12 +22,9 @@
       </div>
     </header>
 
-    <!-- Main Content Area -->
     <div class="layout-body">
-      <!-- Sidebar (lewe menu) -->
       <Sidebar />
 
-      <!-- Content (router-view) -->
       <main class="content-area">
         <router-view />
       </main>
@@ -71,11 +68,6 @@ const handleLogout = () => {
     authStore.logout()
     router.push('/login')
   }
-}
-
-const goToSettings = () => {
-  isUserMenuOpen.value = false
-  alert('Wkrótce: Zarządzanie stawką godzinową!')
 }
 </script>
 

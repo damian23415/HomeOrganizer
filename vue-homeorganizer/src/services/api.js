@@ -116,6 +116,13 @@ export const hourlyRateApi = {
     const today = new Date().toISOString().split('T')[0]
     
     return request(`/worktracking/hourlyRate/${today}`)
+  },
+
+  save: async(data) => {
+    return request('/worktracking/hourlyRate', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
   }
 }
 

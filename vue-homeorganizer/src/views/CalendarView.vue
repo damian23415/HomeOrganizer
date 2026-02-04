@@ -95,12 +95,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
-
-const router = useRouter()
-const authStore = useAuthStore()
 
 const currentMonth = ref(new Date().getMonth())
 const currentYear = ref(new Date().getFullYear())
@@ -113,8 +108,6 @@ const selectedDay = ref(null)
 const modalData = ref({
   startTime: '',
   endTime: '',
-  description: '',
-  currentRate: 0
 })
 
 // Computed
@@ -200,8 +193,7 @@ const nextMonth = () => {
 const fetchCurrentRate = async () => {
   try {
       const data = await api.hourlyRate.getHourlyRate();
-      console.log(data.rate);
-      modalData.value.currentRate = data?.result?.result?.value?.rate;
+      modalData.value.currentRate = data.rate;
     } catch (error) {
     console.error('Błąd pobierania stawki:', error)
   }
@@ -244,6 +236,14 @@ const closeModal = () => {
   }
 }
 
+const combineDateAndTime = (day, timeString) => {
+  const [hours, minutes] = timeString.split(':')
+  const dateTime = new Date(currentYear.value, currentMonth.value, day)
+  dateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0)
+  return dateTime.toISOString()
+}
+
+
 // Save modal data
 const saveModalData = async () => {
   if (!selectedDay.value) return
@@ -256,46 +256,23 @@ const saveModalData = async () => {
   }
 
   const dateKey = getDateKey(selectedDay.value)
-  const existingData = workData.value[dateKey]
 
   try {
     const payload = {
       date: dateKey,
-      hoursWorked: hours,
-      description: modalData.value.description || ''
+      startTime: combineDateAndTime(selectedDay.value, modalData.value.startTime),
+      endTime: combineDateAndTime(selectedDay.value, modalData.value.endTime)
     }
 
-    const method = existingData?.id ? 'PUT' : 'POST'
-    const url = existingData?.id
-      ? `${import.meta.env.VITE_API_URL}/api/workdays/${existingData.id}`
-      : `${import.meta.env.VITE_API_URL}/api/workdays`
+    const saved = await api.workTime.save(payload)
 
-    const response = await fetch(url, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${authStore.token}`
-      },
-      body: JSON.stringify(payload)
-    })
-
-    if (response.ok) {
-      const saved = await response.json()
-      
-      workData.value[dateKey] = {
-        id: saved.id,
-        hours: saved.hoursWorked,
-        description: saved.description,
-        earnings: saved.earnings || 0
-      }
-
-      closeModal()
-    } else {
-      alert('Błąd zapisu danych')
+    workData.value[dateKey] = {
+      earnings: saved.totalEarnings || 0
     }
+
+    closeModal()
   } catch (error) {
     console.error('❌ Błąd zapisu:', error)
-    alert(`Nie udało się zapisać: ${error.message}`)
   }
 }
 
@@ -322,31 +299,17 @@ const fetchMonthData = async () => {
   const year = currentYear.value
 
   try {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/workdays?month=${month}&year=${year}`,
-      {
-        headers: {
-          Authorization: `Bearer ${authStore.token}`
-        }
-      }
-    )
-
-    if (response.ok) {
-      const data = await response.json()
+      const data = await api.workTime.getMonthData(year, month)
 
       data.forEach((day) => {
         const dateKey = day.date.substring(0, 10)
         if (workData.value[dateKey]) {
           workData.value[dateKey] = {
-            id: day.id,
-            hours: day.hoursWorked || 0,
-            description: day.description || '',
-            earnings: day.earnings || 0
+            earnings: day.totalEarnings || 0
           }
         }
       })
-    }
-  } catch (error) {
+    } catch (error) {
     console.error('Błąd pobierania danych:', error)
   }
 }

@@ -15,24 +15,33 @@ public static class WorkTrackingEndpoints
         CreateHourlyRateRequest request,
         IHourlyRateService hourlyRateService,
         HttpContext httpContext) =>
+    {
+      try
       {
-        try
+        var userId = httpContext.GetCurrentUserId();
+        var result = await hourlyRateService.CreateHourlyRateAsync(request, userId);
+
+        return Results.Ok(result);
+      }
+      catch (UnauthorizedAccessException ex)
+      {
+        var error = new ErrorResponse()
         {
-          var userId = httpContext.GetCurrentUserId();
-          var result = await hourlyRateService.CreateHourlyRateAsync(request, userId);
-          
-          return Results.Ok(result);
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-          var error = new ErrorResponse()
-          {
             Message = ex.Message,
-          };
-          
-          return Results.Json(error, statusCode: 401);
-        }
-      })
+        };
+
+        return Results.Json(error, statusCode: 401);
+      }
+      catch (InvalidOperationException ex)
+      {
+        var error = new ErrorResponse
+        {
+            Message = ex.Message
+        };
+        
+        return Results.Json(error, statusCode: 400);
+      }
+    })
       .WithValidation<CreateHourlyRateRequest>()
       .WithCurrentUser()
       .WithName("CreateHourlyRate");
