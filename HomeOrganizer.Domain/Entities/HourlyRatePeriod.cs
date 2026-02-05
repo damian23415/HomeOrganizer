@@ -7,4 +7,9 @@ public class HourlyRatePeriod
   public decimal HourlyRate { get; set; }
   public DateTime EffectiveFrom { get; set; }
   public DateTime? EffectiveTo { get; set; }
+  
+  public void UpdateEffectiveTo(DateTime newEffectiveTo)
+  {
+    EffectiveTo = newEffectiveTo;
+  }
 }

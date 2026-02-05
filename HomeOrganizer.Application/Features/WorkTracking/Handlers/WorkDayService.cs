@@ -27,7 +27,7 @@ public class WorkDayService(IWorkDayRepository workDayRepository, IHourlyRateRep
 
   public async Task<IEnumerable<WorkDayResponse>> GetWorkDaysByMonthAsync(int year, int month, Guid userId)
   {
-    var response = await workDayRepository.GetAllFromMonth(year, month, userId);
+    var response = await workDayRepository.GetAllFromMonthAsync(year, month, userId);
     return mapper.Map<IEnumerable<WorkDayResponse>>(response);
   }
 }

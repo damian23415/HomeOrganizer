@@ -6,4 +6,5 @@ public interface IHourlyRateService
 {
   Task<HourlyRateResponse> CreateHourlyRateAsync(CreateHourlyRateRequest request, Guid userId);
   Task<HourlyRateResponse?> GetCurrentRateAsync(Guid userId, DateTime date);
+  Task<IList<HourlyRatesResponse>> GetHourlyRates(Guid userId);
 }

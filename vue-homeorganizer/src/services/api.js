@@ -118,6 +118,10 @@ export const hourlyRateApi = {
     return request(`/worktracking/hourlyRate/${today}`)
   },
 
+  getHourlyRates: async () => {
+    return request(`/worktracking/hourlyRates`)
+  },
+
   save: async(data) => {
     return request('/worktracking/hourlyRate', {
       method: 'POST',

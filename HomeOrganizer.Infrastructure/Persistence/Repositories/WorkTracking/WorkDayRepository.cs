@@ -7,7 +7,7 @@ namespace HomeOrganizer.Infrastructure.Persistence.Repositories.WorkTracking;
 
 public class WorkDayRepository(IDbConnection connection) : IWorkDayRepository
 {
-  public async Task<List<WorkDay>> GetAllFromMonth(int year, int month, Guid userId)
+  public async Task<List<WorkDay>> GetAllFromMonthAsync(int year, int month, Guid userId)
   {
     const string sql = @"SELECT * FROM ""WorkDays"" 
         WHERE EXTRACT(YEAR FROM ""Date"") = @Year 
@@ -20,6 +20,14 @@ public class WorkDayRepository(IDbConnection connection) : IWorkDayRepository
       Month = month,
       UserId = userId
     })).ToList();
+  }
+
+  public async Task<List<WorkDay>> GetAllForUserAsync(Guid userId)
+  {
+    const string sql = @"SELECT * FROM ""WorkDays"" 
+        WHERE ""UserId"" = @UserId";
+
+    return (await connection.QueryAsync<WorkDay>(sql, new { UserId = userId })).ToList();
   }
 
   public async Task AddAsync(WorkDay workDay)
