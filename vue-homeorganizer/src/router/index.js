@@ -5,6 +5,7 @@ import CalendarView from '../views/CalendarView.vue'
 import LoginView from '../views/LoginView.vue'  // ⬅️ MUSISZ MIEĆ!
 import RegisterView from '@/views/RegisterView.vue'
 import HourlyRatesView from '@/views/HourlyRatesView.vue'
+import EmailConfirmationView from '@/views/EmailConfirmationView.vue'
 
 const routes = [
   {
@@ -17,6 +18,12 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: RegisterView,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/email-confirmation',
+    name: 'EmailConfirmation',
+    component: EmailConfirmationView,
     meta: { requiresAuth: false }
   },
   {

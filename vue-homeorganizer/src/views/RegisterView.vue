@@ -29,6 +29,18 @@
                     />
                 </div>
 
+                <div class="form-group">
+                    <label for="confirm-passowrd">Potwierdź hasło:</label>
+                    <input
+                        id="confirm-passowrd"
+                        v-model="credentials.confirmPassword"
+                        type="password"
+                        placeholder="Potwierdź hasło"
+                        required
+                        autocomplete="new-password"
+                    />
+                </div>
+
                 <div v-if="errorMessage" class="error-message">
                     {{ errorMessage }}
                 </div>
@@ -57,7 +69,8 @@ const authStore = useAuthStore()
 
 var credentials = ref({
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: '',
 })
 
 const loading = ref(false)
@@ -67,22 +80,19 @@ const handleRegister = async () => {
     loading.value = true
     errorMessage.value = ''
 
+    if (credentials.value.password !== credentials.value.confirmPassword) {
+      errorMessage.value = '❌ Hasła nie są identyczne',
+      loading.value = false
+      return
+    }
+
     try {
         const response = await authApi.register(credentials.value);
 
-        const token = response.token || response.Token
-        const user = response.user || response.User
-
-        if (!token) {
-            throw new Error ('Brak tokena w odpowiedzi')
-        }
-
-        authStore.setAuth({
-            token: token,
-            user: user
+        router.push({
+          name: 'EmailConfirmation',
+          query: {email: credentials.value.email}
         })
-
-        router.push('/')
     } catch (error) {
         errorMessage.value = errorMessage || 'Nieprawidłowy email lub hasło'
     } finally {
