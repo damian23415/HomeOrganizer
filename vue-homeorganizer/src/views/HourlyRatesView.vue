@@ -6,10 +6,10 @@
     <div class="current-rate-section">
       <div v-if="currentRate" class="current-rate-card">
         <div class="badge-active">✅ Aktualna stawka</div>
-        <div class="rate-amount">{{ currentRate.rate }} zł/h</div>
+        <div class="rate-amount">{{ currentRate.ratePerHour }} zł/h</div>
         <div class="rate-info">
-          <p>📅 Obowiązuje od: {{ currentRate.startDate }}</p>
-          <p>💰 Zarobki w tym okresie: 24,500.00 zł</p>
+          <p>📅 Obowiązuje od: {{ currentRate.effectiveFrom }}</p>
+          <p>💰 Zarobki w tym okresie: {{ currentRate.totalEarnings }} zł</p>
         </div>
       </div>
     </div>
@@ -50,25 +50,17 @@
     <div class="history-section">
       <h3>📚 Historia stawek</h3>
       
-      <div class="rate-card">
+      <div 
+        v-for="(rate, index) in historicalRates"
+        :key="index"
+        class="rate-card">
         <div class="card-header">
           <span class="badge-archive">📦 Archiwalna</span>
-          <span class="rate-value">80.00 zł/h</span>
+          <span class="rate-value">{{ rate.ratePerHour}}zł/h</span>
         </div>
         <div class="card-body">
-          <p>📅 1 stycznia 2025 - 31 maja 2025 (5 miesięcy)</p>
-          <p>💰 Zarobki: 12,800.00 zł</p>
-        </div>
-      </div>
-
-      <div class="rate-card">
-        <div class="card-header">
-          <span class="badge-archive">📦 Archiwalna</span>
-          <span class="rate-value">50.00 zł/h</span>
-        </div>
-        <div class="card-body">
-          <p>📅 1 czerwca 2024 - 31 grudnia 2024 (7 miesięcy)</p>
-          <p>💰 Zarobki: 8,400.00 zł</p>
+          <p>📅 {{ rate.effectiveFrom }} - {{ rate.effectiveTo }} ({{ rate.totalHours / 24}} dni)</p>
+          <p>💰 Zarobki: {{ rate.totalEarnings }} zł</p>
         </div>
       </div>
     </div>
@@ -79,6 +71,7 @@
 import { onMounted, ref } from 'vue'
 import api from '@/services/api'
 
+const historicalRates = ref([])
 const currentRate = ref(null)
 const newRate = ref({
   amount: '',
@@ -103,17 +96,25 @@ const formatDate = (dateString) => {
 
 const fetchRates = async () => {
     try {
-        const response = await api.hourlyRate.getHourlyRate();
-        console.log(response.rate)
+        const response = await api.hourlyRate.getHourlyRates();
 
-        currentRate.value = {
-            rate: response.rate,
-            startDate: formatDate(response.startDate),
-            endDate: formatDate(response.endDate)
+        currentRate.value = response.find(rate => rate.isCurrentRate) || null;
+
+        if (currentRate.value?.effectiveFrom) {
+          currentRate.value.effectiveFrom = formatDate(currentRate.value.effectiveFrom)
         }
-    } catch (error) {
+
+        historicalRates.value = response
+        .filter(rate => !rate.isCurrentRate)
+        .map(rate => ({
+          ...rate,
+          effectiveFrom: formatDate(rate.effectiveFrom),
+          effectiveTo: formatDate(rate.effectiveTo)
+        }))
+
+      } catch (error) {
         console.log('Błąd:', error);
-    }
+      }
 }
 
 const handleAddRate = async () => {
