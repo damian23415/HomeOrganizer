@@ -248,6 +248,11 @@ const combineDateAndTime = (day, timeString) => {
 const saveModalData = async () => {
   if (!selectedDay.value) return
 
+  if (modalData.value.currentRate == null || modalData.value.currentRate === 0) {
+    alert("Najpierw musisz wypełnic stawkę godzinową")
+    return;
+  }
+
   const hours = parseFloat(calculatedHours.value)
   
   if (hours <= 0 && !modalData.value.description) {

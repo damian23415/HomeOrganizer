@@ -43,5 +43,36 @@ public static class UserEndpoints
       })
       .WithValidation<LoginRequest>()
       .WithName("LoginUser");
+    
+    group.MapPost("confirmEmail", async (
+        EmailConfirmationRequest request,
+        IUserAuthenticationService userAuthenticationService) =>
+    {
+      try
+      {
+        await userAuthenticationService.ConfirmEmailAsync(request.Token, request.EmailConfirmationTokenExpiry);
+        
+        return Results.Ok(new { Message = "Email confirmed." });
+      }
+      catch (InvalidCredentialException)
+      {
+        var error = new ErrorResponse
+        {
+            Message = "Nieprawidłowy lub wygasły token potwierdzenia email."
+        };
+
+        return Results.Json(error, statusCode: 400);
+      }
+      catch (InvalidOperationException ex)
+      {
+        var error = new ErrorResponse
+        {
+            Message = ex.Message
+        };
+
+        return Results.Json(error, statusCode: 400);
+      }
+    })
+    .WithName("ConfirmEmail");
   }
 }

@@ -1,4 +1,4 @@
-﻿using HomeOrganizer.Application.Features.Repositories;
+﻿using HomeOrganizer.Application.Features.RepositoryInterfaces;
 
 namespace HomeOrganizer.Infrastructure.Security;
 

@@ -55,7 +55,7 @@ public class HourlyRateRepository(IDbConnection dbConnection) : IHourlyRateRepos
       WHERE ""UserId"" = @UserId
       AND ""EffectiveTo"" IS NULL";
     
-    return await dbConnection.QuerySingleAsync<HourlyRatePeriod>(sql, new { UserId = userId });
+    return await dbConnection.QuerySingleOrDefaultAsync<HourlyRatePeriod>(sql, new { UserId = userId });
   }
 
   public async Task AddAsync(HourlyRatePeriod hourlyRatePeriod)

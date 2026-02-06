@@ -1,4 +1,4 @@
-﻿namespace HomeOrganizer.Application.Features.Repositories;
+﻿namespace HomeOrganizer.Application.Features.RepositoryInterfaces;
 
 public interface IPasswordHasher
 {

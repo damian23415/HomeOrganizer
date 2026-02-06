@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using FluentAssertions;
 using HomeOrganizer.Application.Common.Exceptions;
-using HomeOrganizer.Application.Features.Repositories;
+using HomeOrganizer.Application.Features.EmailInterfaces;
 using HomeOrganizer.Application.Features.RepositoryInterfaces;
 using HomeOrganizer.Application.Features.Users.Dtos;
 using HomeOrganizer.Application.Features.Users.Handlers;
@@ -21,12 +21,15 @@ public class UserRegistrationServiceTests
     _mapperMock = new Mock<IMapper>();
     _passwordHasherMock = new Mock<IPasswordHasher>();
     _jwtTokenGeneratorMock = new Mock<IJwtTokenGenerator>();
+    _emailService = new Mock<IEmailService>();
+    _emailSettings = new Mock<IEmailSettings>();
 
     _sut = new UserRegistrationService(
       _userRepositoryMock.Object,
       _mapperMock.Object,
       _passwordHasherMock.Object,
-      _jwtTokenGeneratorMock.Object
+      _emailService.Object,
+      _emailSettings.Object
     );
   }
 
@@ -35,6 +38,8 @@ public class UserRegistrationServiceTests
   private Mock<IPasswordHasher>? _passwordHasherMock;
   private Mock<IJwtTokenGenerator>? _jwtTokenGeneratorMock;
   private UserRegistrationService? _sut;
+  private Mock<IEmailService>? _emailService;
+  private Mock<IEmailSettings>? _emailSettings;
 
   [Test]
   public async Task RegisterAsync_WhenUserDoesNotExist_ShouldRegisterSuccessfully()
@@ -90,7 +95,6 @@ public class UserRegistrationServiceTests
 
     // Assert
     result.Should().NotBeNull();
-    result.Token.Should().Be(expectedToken);
     result.User.Should().BeEquivalentTo(userDto);
 
     _userRepositoryMock.Verify(x => x.GetByEmail(request.Email), Times.Once);

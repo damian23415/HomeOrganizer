@@ -5,4 +5,5 @@ namespace HomeOrganizer.Application.Features.Users.Interfaces;
 public interface IUserAuthenticationService
 {
   Task<LoginResponse> LoginAsync(LoginRequest request);
+  Task ConfirmEmailAsync(string confirmationToken, DateTime expirationDate);
 }

@@ -1,157 +1,246 @@
 <template>
-  <div class="confirmation-container">
-    <div class="confirmation-card">
-      <div class="icon-wrapper">
-        <span class="icon">📧</span>
-      </div>
-      
-      <h1>Sprawdź swoją skrzynkę!</h1>
-      
-      <p class="main-message">
-        Wysłaliśmy link aktywacyjny na adres:
-      </p>
-      
-      <p class="email">{{ email }}</p>
-      
-      <div class="info-box">
-        <p>✅ Kliknij link w emailu, aby aktywować konto</p>
-        <p>⏱️ Link jest ważny przez 24 godziny</p>
-        <p>📬 Sprawdź folder SPAM, jeśli nie widzisz wiadomości</p>
-      </div>
-      
-      <div class="actions">
-        
-        <button @click="goToLogin" class="btn-login">
-          🔑 Przejdź do logowania
-        </button>
-      </div>
+  <div class="confirm-page">
+    <div class="card">
+      <header class="card__header">
+        <h1 class="title">Potwierdzanie adresu e‑mail</h1>
+        <p class="subtitle">Trwa sprawdzanie linku — proszę chwilę poczekać.</p>
+      </header>
+
+      <section class="card__body">
+        <div v-if="status === 'loading'" class="state loading" aria-live="polite">
+          <div class="spinner" aria-hidden="true"></div>
+          <p class="muted">Proszę czekać — potwierdzanie...</p>
+        </div>
+
+        <div v-else-if="status === 'success'" class="state success" aria-live="polite">
+          <div class="icon">✅</div>
+          <h2>Adres potwierdzony</h2>
+          <p>Twoje konto zostało aktywowane. Zaraz przekierujemy Cię do ekranu logowania.</p>
+          <div class="actions">
+            <button class="btn" @click="goToLogin">Przejdź do logowania</button>
+          </div>
+        </div>
+
+        <div v-else-if="status === 'expired'" class="state error" aria-live="polite">
+          <div class="icon">⚠️</div>
+          <h2>Link wygasł</h2>
+          <p>Link potwierdzający wygasł. Możesz poprosić o nowy link.</p>
+
+          <form class="resend" @submit.prevent="resend">
+            <label class="label">
+              Twój e‑mail
+              <input v-model="email" type="email" placeholder="adres@domena.pl" required />
+            </label>
+            <div class="actions">
+              <button class="btn outline" :disabled="resending">
+                {{ resending ? 'Wysyłanie...' : 'Wyślij ponownie' }}
+              </button>
+            </div>
+            <p class="muted small" v-if="resendMessage">{{ resendMessage }}</p>
+          </form>
+        </div>
+
+        <div v-else-if="status === 'error'" class="state error" aria-live="polite">
+          <div class="icon">⚠️</div>
+          <h2>Błąd</h2>
+          <p>Wystąpił błąd sieci. Spróbuj ponownie.</p>
+          <div class="actions">
+            <button class="btn" @click="confirmToken">Spróbuj ponownie</button>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import api from '@/services/api'
 
-const router = useRouter()
 const route = useRoute()
+const router = useRouter()
 
-const email = ref(route.query.email || 'twoj@email.com')
+const loading = ref(false)
+const status = ref(null) // null | 'success' | 'expired' | 'invalid' | 'error'
+const email = ref('')
+const resending = ref(false)
+const resendMessage = ref('')
 
-const goToLogin = () => {
-  router.push('/login')
+const token = route.query.token || ''
+const expiryDate = route.query.expiry || ''
+
+const goToLogin = () => router.push({ name: 'login' })
+
+const confirmToken = async () => {
+    if (!token) {
+        status.value = null;
+        return
+    }
+    status.value = 'loading'
+    loading.value = true
+    try {
+
+        const payload = {
+            token: token,
+            emailConfirmationTokenExpiry: expiryDate
+        };
+
+         const response = await api.auth.confirmToken(payload);
+        
+         if (response) {
+            status.value = 'success'
+           router.push({
+             name: "Login"
+           })
+         }
+       
+    } catch (e) {
+        status.value = 'error'
+    } finally {
+        loading.value = false
+    }
 }
+
+onMounted(() => {
+    if (token) confirmToken()
+})
 </script>
 
 <style scoped>
-.confirmation-container {
-  min-height: 100vh;
+:root {
+  --card-bg: #ffffff;
+  --page-bg: #f4f7fb;
+  --muted: #6b7280;
+  --primary-start: #667eea;
+  --primary-end: #764ba2;
+  --btn-text: #ffffff;
+  --danger: #ef4444;
+  --success: #10b981;
+}
+
+.confirm-page {
+  min-height: 70vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  padding: 32px 16px;
+  background: var(--page-bg);
 }
 
-.confirmation-card {
-  background: white;
-  border-radius: 16px;
-  padding: 40px;
+/* card */
+.card {
   width: 100%;
-  max-width: 500px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  text-align: center;
-}
-
-.icon-wrapper {
-  margin-bottom: 20px;
-}
-
-.icon {
-  font-size: 80px;
-  display: inline-block;
-  animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
-}
-
-h1 {
-  margin: 0 0 20px 0;
-  color: #333;
-  font-size: 28px;
-}
-
-.main-message {
-  color: #666;
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-
-.email {
-  color: #667eea;
-  font-weight: 600;
-  font-size: 18px;
-  margin-bottom: 30px;
-}
-
-.info-box {
-  background: #f8f9fa;
+  max-width: 680px;
+  background: var(--card-bg);
   border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 30px;
-  text-align: left;
+  box-shadow: 0 8px 24px rgba(16,24,40,0.06);
+  overflow: hidden;
+  border: 1px solid rgba(16,24,40,0.04);
 }
 
-.info-box p {
-  margin: 10px 0;
-  color: #555;
-  font-size: 14px;
-  line-height: 1.6;
+/* header */
+.card__header {
+  padding: 28px 28px 8px 28px;
+  background: linear-gradient(90deg, rgba(102,126,234,0.06), rgba(118,75,162,0.03));
+}
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #0f172a;
+}
+.subtitle {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
 }
 
+/* body */
+.card__body {
+  padding: 24px 28px 28px 28px;
+}
+
+/* common states */
+.state {
+  text-align: center;
+  padding: 8px 12px;
+}
+.state .icon {
+  font-size: 34px;
+  margin-bottom: 8px;
+}
+.state h2 {
+  margin: 6px 0 8px;
+  font-size: 18px;
+}
+.state p { color: var(--muted); margin: 0 0 12px; }
+
+/* spinner */
+.spinner {
+  width: 48px;
+  height: 48px;
+  margin: 8px auto 12px;
+  border-radius: 50%;
+  border: 4px solid rgba(99,102,241,0.15);
+  border-top-color: rgba(118,75,162,1);
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* actions & buttons */
 .actions {
+  margin-top: 12px;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   gap: 12px;
 }
 
-.btn-resend,
-.btn-login {
-  padding: 14px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
+.btn {
+  padding: 10px 18px;
+  border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  border: none;
+  color: var(--btn-text);
+  background: linear-gradient(90deg, var(--primary-start), var(--primary-end));
+  box-shadow: 0 6px 18px rgba(102,126,234,0.18);
+}
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn.outline {
+  background: transparent;
+  color: #0f172a;
+  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: none;
 }
 
-.btn-resend {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+/* inputs */
+.label {
+  display: block;
+  text-align: left;
+  font-size: 13px;
+  color: #111827;
+  margin: 10px 0 6px;
+}
+.label input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(15,23,42,0.06);
+  margin-top: 6px;
+  box-sizing: border-box;
+  font-size: 14px;
 }
 
-.btn-resend:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
+/* helper text */
+.muted { color: var(--muted); margin-top: 10px; }
+.small { font-size: 13px; }
 
-.btn-resend:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-login {
-  background: white;
-  color: #667eea;
-  border: 2px solid #667eea;
-}
-
-.btn-login:hover {
-  background: #f8f9fa;
-  transform: translateY(-2px);
+/* responsive */
+@media (max-width: 520px) {
+  .card { margin: 12px; }
+  .card__header { padding: 20px; }
+  .card__body { padding: 18px; }
+  .title { font-size: 18px; }
 }
 </style>

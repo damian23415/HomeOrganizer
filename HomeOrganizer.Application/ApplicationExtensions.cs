@@ -34,7 +34,7 @@ public static class ApplicationExtensions
     services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
     services.AddValidatorsFromAssemblyContaining<HourlyRateValidator>();
     services.AddValidatorsFromAssemblyContaining<WorkDayValidator>();
-
+    
     services.AddScoped<IUserRegistrationService, UserRegistrationService>();
     services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
     services.AddScoped<IHourlyRateService, HourlyRateService>();

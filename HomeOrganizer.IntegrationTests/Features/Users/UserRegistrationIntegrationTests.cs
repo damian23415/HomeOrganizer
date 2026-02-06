@@ -55,7 +55,6 @@ public class UserRegistrationIntegrationTests
 
     var result = await response.Content.ReadFromJsonAsync<RegisterUserResponse>();
     result.Should().NotBeNull();
-    result!.Token.Should().NotBeNullOrEmpty();
     result.User.Should().NotBeNull();
     result.User.Email.Should().Be(request.Email);
     result.User.Role.Should().Be("User");
@@ -142,25 +141,6 @@ public class UserRegistrationIntegrationTests
 
     // Assert
     response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-  }
-
-  [Test]
-  public async Task RegisterUser_GeneratedToken_ShouldBeValidJwt()
-  {
-    // Arrange
-    var request = new RegisterUserRequest
-    {
-      Email = $"jwt_test_{Guid.NewGuid()}@example.com",
-      Password = "SecurePassword123!"
-    };
-
-    // Act
-    var response = await _client.PostAsJsonAsync("/api/users/register", request);
-    var result = await response.Content.ReadFromJsonAsync<RegisterUserResponse>();
-
-    // Assert
-    var token = result!.Token;
-    token.Split('.').Should().HaveCount(3);
   }
 
   [Test]

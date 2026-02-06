@@ -89,10 +89,12 @@ const handleRegister = async () => {
     try {
         const response = await authApi.register(credentials.value);
 
-        router.push({
-          name: 'EmailConfirmation',
-          query: {email: credentials.value.email}
-        })
+        if (response) {
+           router.push({
+            name: 'EmailConfirmationSend',
+            query: {email: credentials.value.email}
+          })
+        }
     } catch (error) {
         errorMessage.value = errorMessage || 'Nieprawidłowy email lub hasło'
     } finally {

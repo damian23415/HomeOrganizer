@@ -1,6 +1,7 @@
-﻿using AutoMapper;
+﻿using System.Security.Cryptography;
+using AutoMapper;
 using HomeOrganizer.Application.Common.Exceptions;
-using HomeOrganizer.Application.Features.Repositories;
+using HomeOrganizer.Application.Features.EmailInterfaces;
 using HomeOrganizer.Application.Features.RepositoryInterfaces;
 using HomeOrganizer.Application.Features.Users.Dtos;
 using HomeOrganizer.Application.Features.Users.Interfaces;
@@ -12,7 +13,8 @@ public class UserRegistrationService(
   IUserRepository userRepository,
   IMapper mapper,
   IPasswordHasher passwordHasher,
-  IJwtTokenGenerator jwtTokenGenerator)
+  IEmailService emailService,
+  IEmailSettings emailSettings)
   : IUserRegistrationService
 {
   public async Task<RegisterUserResponse> RegisterAsync(RegisterUserRequest request)
@@ -22,17 +24,33 @@ public class UserRegistrationService(
     if (existingUser != null)
       throw new UserAlreadyExistsException(request.Email);
 
+    var confirmationToken = GenerateSecureToken();
+    
     var user = mapper.Map<User>(request);
+    
     user.PasswordHash = passwordHasher.HashPassword(request.Password);
-
-    var token = jwtTokenGenerator.GenerateToken(user);
-
+    user.EmailConfirmationToken = confirmationToken;
+    user.EmailConfirmationTokenExpiry = DateTime.UtcNow.AddHours(24);
+    
     await userRepository.AddAsync(user);
+
+    var confirmationLink = $"{emailSettings.FrontendUrl}/confirm-email?token={Uri.EscapeDataString(confirmationToken)}&expiry={user.EmailConfirmationTokenExpiry:o}";
+    await emailService.SendEmailConfirmationAsync(request.Email, confirmationLink);
 
     return new RegisterUserResponse
     {
-      Token = token,
       User = mapper.Map<UserDto>(user)
     };
+  }
+  
+  private string GenerateSecureToken()
+  {
+    var bytes = new byte[32];
+    using var rng = RandomNumberGenerator.Create();
+    rng.GetBytes(bytes);
+    return Convert.ToBase64String(bytes)
+        .Replace("+", "-")
+        .Replace("/", "_")
+        .Replace("=", "");
   }
 }
