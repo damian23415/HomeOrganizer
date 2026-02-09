@@ -2,6 +2,7 @@
 using Dapper;
 using HomeOrganizer.Application.Features.RepositoryInterfaces;
 using HomeOrganizer.Domain.Entities;
+using HomeOrganizer.Domain.Entities.WorkTracking;
 
 namespace HomeOrganizer.Infrastructure.Persistence.Repositories.WorkTracking;
 

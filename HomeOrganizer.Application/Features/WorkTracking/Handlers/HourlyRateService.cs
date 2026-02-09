@@ -2,6 +2,7 @@
 using HomeOrganizer.Application.Features.RepositoryInterfaces;
 using HomeOrganizer.Application.Features.WorkTracking.Dtos;
 using HomeOrganizer.Application.Features.WorkTracking.Interfaces;
+using HomeOrganizer.Domain.Entities.Billings;
 
 namespace HomeOrganizer.Application.Features.WorkTracking.Handlers;
 
@@ -22,7 +23,7 @@ public class HourlyRateService(IHourlyRateRepository hourlyRateRepository, IWork
       await hourlyRateRepository.UpdateAsync(currentRate);
     }
     
-    var entity = mapper.Map<Domain.Entities.HourlyRatePeriod>(request);
+    var entity = mapper.Map<HourlyRatePeriod>(request);
     entity.UserId = userId;
     
     await hourlyRateRepository.AddAsync(entity);

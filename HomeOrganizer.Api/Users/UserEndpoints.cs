@@ -1,8 +1,12 @@
 ﻿using System.Security.Authentication;
 using HomeOrganizer.Api.Extensions;
 using HomeOrganizer.Application.Common.Models;
+using HomeOrganizer.Application.DTOs.Users;
+using HomeOrganizer.Application.Features.Users.Commands;
 using HomeOrganizer.Application.Features.Users.Dtos;
 using HomeOrganizer.Application.Features.Users.Interfaces;
+using MediatR;
+using Microsoft.AspNetCore.Identity.Data;
 
 namespace HomeOrganizer.Api.Users;
 
@@ -14,13 +18,19 @@ public static class UserEndpoints
 
     group.MapPost("register", async (
         RegisterUserRequest request,
-        IUserRegistrationService userRegistrationService) =>
+        IMediator mediator) =>
       {
-        var result = await userRegistrationService.RegisterAsync(request);
-        return Results.Ok(result);
+        var command = new RegisterUserCommand(request.Email, request.Password);
+        var result = await mediator.Send(command);
+
+        return !result.IsSuccess ? Results.BadRequest(result.Error) : Results.Ok(result);
       })
       .WithValidation<RegisterUserRequest>()
       .WithName("RegisterUser");
+    
+    
+    
+    
 
     group.MapPost("login", async (
         LoginRequest request,

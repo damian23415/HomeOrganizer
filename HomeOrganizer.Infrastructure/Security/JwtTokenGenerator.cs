@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using HomeOrganizer.Application.Features.RepositoryInterfaces;
 using HomeOrganizer.Domain.Entities;
+using HomeOrganizer.Domain.Entities.Users;
 using Microsoft.IdentityModel.Tokens;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 

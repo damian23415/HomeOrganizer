@@ -1,4 +1,5 @@
 ﻿using HomeOrganizer.Domain.Entities;
+using HomeOrganizer.Domain.Entities.Billings;
 
 namespace HomeOrganizer.Application.Features.RepositoryInterfaces;
 

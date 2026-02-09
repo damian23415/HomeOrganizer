@@ -2,5 +2,7 @@
 
 public interface IEmailService
 {
-  Task SendEmailConfirmationAsync(string email, string confirmationLink);
+  Task SendEmailConfirmationAsync(string receipentEmail, string subject, string body, string confirmationLink);
+  string BuildEmailConfirmationBody(string confirmationLink);
+  string GetEmailConfirmationSubject();
 }

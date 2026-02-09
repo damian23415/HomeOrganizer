@@ -1,12 +1,16 @@
 ﻿using System.Data;
 using HomeOrganizer.Application.Features.EmailInterfaces;
 using HomeOrganizer.Application.Features.RepositoryInterfaces;
+using HomeOrganizer.Domain.Interfaces;
+using HomeOrganizer.Infrastructure.Data;
 using HomeOrganizer.Infrastructure.Persistence.Migrations;
 using HomeOrganizer.Infrastructure.Persistence.Repositories;
 using HomeOrganizer.Infrastructure.Persistence.Repositories.WorkTracking;
+using HomeOrganizer.Infrastructure.Repositories.Users;
 using HomeOrganizer.Infrastructure.Security;
 using HomeOrganizer.Infrastructure.Services;
 using HomeOrganizer.Infrastructure.Settings;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,11 +25,20 @@ public static class InfrastructureExtensions
   {
     var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-    services.AddScoped<IDbConnection>(sp => new NpgsqlConnection(connectionString));
+    services.AddDbContext<HomeOrganizerDbContext>(options =>
+        options.UseNpgsql(connectionString));
+    
     services.AddScoped<IUserRepository, UserRepository>();
+    
+    
+    
+    
     services.AddScoped<IHourlyRateRepository, HourlyRateRepository>();
     services.AddScoped<IWorkDayRepository, WorkDayRepository>();
+    services.AddScoped<IEmailRepository, EmailRepository>();
     services.AddScoped<IPasswordHasher, PasswordHasher>();
+
+    services.AddScoped<IUnitOfWork, UnitOfWork>();
     
     services.AddScoped<IEmailService, EmailService>();
     services.Configure<EmailSettings>(cfg =>

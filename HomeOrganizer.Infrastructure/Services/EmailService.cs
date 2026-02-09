@@ -6,14 +6,22 @@ namespace HomeOrganizer.Infrastructure.Services;
 
 public class EmailService(IResend resend) : IEmailService
 {
-  public async Task SendEmailConfirmationAsync(string email, string confirmationLink)
+  public async Task SendEmailConfirmationAsync(string receipentEmail, string subject, string body, string confirmationLink)
   {
     var message = new EmailMessage
     {
         From = "home.organizer.app@resend.dev",
-        To = email,
-        Subject = "Potwierdź swój email - HomeOrganizer",
-        HtmlBody = $@"
+        To = receipentEmail,
+        Subject = subject,
+        HtmlBody = body
+    };
+    
+    await resend.EmailSendAsync(message);
+  }
+
+  public string BuildEmailConfirmationBody(string confirmationLink)
+  {
+      return $@"
             <!DOCTYPE html>
             <html>
             <head>
@@ -59,9 +67,11 @@ public class EmailService(IResend resend) : IEmailService
                     </div>
                 </div>
             </body>
-            </html>"
-        };
-    
-    await resend.EmailSendAsync(message);
+            </html>";
+  }
+
+  public string GetEmailConfirmationSubject()
+  {
+      return "Potwierdź swój email - HomeOrganizer";
   }
 }

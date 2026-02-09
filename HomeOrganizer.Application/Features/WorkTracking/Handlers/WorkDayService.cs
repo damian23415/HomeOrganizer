@@ -3,6 +3,7 @@ using HomeOrganizer.Application.Features.RepositoryInterfaces;
 using HomeOrganizer.Application.Features.WorkTracking.Dtos;
 using HomeOrganizer.Application.Features.WorkTracking.Interfaces;
 using HomeOrganizer.Domain.Entities;
+using HomeOrganizer.Domain.Entities.WorkTracking;
 
 namespace HomeOrganizer.Application.Features.WorkTracking.Handlers;
 

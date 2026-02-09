@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HomeOrganizer.Application.Features.WorkTracking.Dtos;
 using HomeOrganizer.Domain.Entities;
+using HomeOrganizer.Domain.Entities.Billings;
 
 namespace HomeOrganizer.Application.Mapping;
 
