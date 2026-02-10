@@ -7,5 +7,5 @@ public interface IUserRepository
   Task<User?> GetByEmailAsync(string email);
   Task AddAsync(User user);
   Task UpdateAsync(User user);
-  Task<User?> GetUserByTokenAsync(string token);
+  Task<User?> GetByEmailConfirmationTokenAsync(string token);
 }

@@ -14,6 +14,9 @@ public static class ApiExtensions
     services.AddJwtAuthentication(configuration);
     services.AddAuthorization();
     
+    services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
+    
     return services;
   }
 
@@ -44,7 +47,7 @@ public static class ApiExtensions
   private static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
   {
     var jwtSettings = configuration.GetSection("Jwt");
-    var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret is not configured");
+    var secretKey = jwtSettings["Key"] ?? throw new InvalidOperationException("JWT Secret is not configured");
 
     services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
       .AddJwtBearer(options =>

@@ -1,6 +1,6 @@
 ﻿namespace HomeOrganizer.Application.Features.WorkTracking.Dtos;
 
-public class CreateHourlyRateRequest
+public class CreateHourlyRateResponse
 {
   public decimal Rate { get; set; }
   public DateTime EffectiveFrom { get; set; }

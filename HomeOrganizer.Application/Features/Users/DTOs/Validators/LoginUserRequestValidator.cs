@@ -1,11 +1,10 @@
 ﻿using FluentValidation;
-using HomeOrganizer.Application.DTOs.Users;
 
-namespace HomeOrganizer.Application.Features.Users.DTOs;
+namespace HomeOrganizer.Application.Features.Users.DTOs.Validators;
 
-public class RegisterUserRequestValidator : AbstractValidator<RegisterUserRequest>
+public class LoginUserRequestValidator : AbstractValidator<LoginUserRequest>
 {
-  public RegisterUserRequestValidator()
+  public LoginUserRequestValidator()
   {
     RuleFor(x => x.Email)
         .NotEmpty().WithMessage("Email is required.")

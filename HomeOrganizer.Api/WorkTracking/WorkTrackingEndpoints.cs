@@ -1,7 +1,8 @@
 ﻿using HomeOrganizer.Api.Extensions;
 using HomeOrganizer.Application.Common.Models;
+using HomeOrganizer.Application.Features.WorkTracking.Commands;
 using HomeOrganizer.Application.Features.WorkTracking.Dtos;
-using HomeOrganizer.Application.Features.WorkTracking.Interfaces;
+using MediatR;
 
 namespace HomeOrganizer.Api.WorkTracking;
 
@@ -13,34 +14,14 @@ public static class WorkTrackingEndpoints
 
     group.MapPost("hourlyRate", async (
         CreateHourlyRateRequest request,
-        IHourlyRateService hourlyRateService,
+        IMediator mediator,
         HttpContext httpContext) =>
     {
-      try
-      {
-        var userId = httpContext.GetCurrentUserId();
-        var result = await hourlyRateService.CreateHourlyRateAsync(request, userId);
-
-        return Results.Ok(result);
-      }
-      catch (UnauthorizedAccessException ex)
-      {
-        var error = new ErrorResponse()
-        {
-            Message = ex.Message,
-        };
-
-        return Results.Json(error, statusCode: 401);
-      }
-      catch (InvalidOperationException ex)
-      {
-        var error = new ErrorResponse
-        {
-            Message = ex.Message
-        };
-        
-        return Results.Json(error, statusCode: 400);
-      }
+      var userId = httpContext.GetCurrentUserId();
+      var command = new CreateHourlyRateCommand(userId, request.Rate, request.EffectiveFrom, request.EffectiveTo);
+      var result = await mediator.Send(command);
+      
+      return result.IsSuccess ? Results.Ok(result.Value) : Results.BadRequest(result.Error);
     })
       .WithValidation<CreateHourlyRateRequest>()
       .WithCurrentUser()

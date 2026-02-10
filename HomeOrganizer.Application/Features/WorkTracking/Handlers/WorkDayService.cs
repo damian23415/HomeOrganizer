@@ -18,8 +18,8 @@ public class WorkDayService(IWorkDayRepository workDayRepository, IHourlyRateRep
     
     var workDay = mapper.Map<WorkDay>(request);
     workDay.UserId = userId;
-    workDay.HourlyRateUsed = hourlyRate.HourlyRate;
-    workDay.TotalEarnings = workDay.TotalHours * hourlyRate.HourlyRate;
+    workDay.HourlyRateUsed = hourlyRate.Rate;
+    workDay.TotalEarnings = workDay.TotalHours * hourlyRate.Rate;
     
     await workDayRepository.AddAsync(workDay);
     

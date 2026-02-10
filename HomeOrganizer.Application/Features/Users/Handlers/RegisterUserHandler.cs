@@ -14,7 +14,9 @@ namespace HomeOrganizer.Application.Features.Users.Handlers;
 public class RegisterUserHandler(
     IUserRepository userRepository,
     IPasswordHasher passwordHasher,
-    IMapper mapper) : IRequestHandler<RegisterUserCommand, Result<RegisterUserResponse>>
+    IMapper mapper,
+    IEmailService emailService,
+    IEmailConfirmationTokenGenerator tokenGenerator) : IRequestHandler<RegisterUserCommand, Result<RegisterUserResponse>>
 {
   public async Task<Result<RegisterUserResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
   {
@@ -26,7 +28,13 @@ public class RegisterUserHandler(
     var hashedPassword = passwordHasher.HashPassword(request.Password);
     var user = new User(new EmailAddress(request.Email), hashedPassword);
     
+    var token = tokenGenerator.GenerateToken();
+    var expiry = DateTime.UtcNow.AddHours(24);
+
+    user.SetEmailConfirmationToken(token, expiry);
+
     await userRepository.AddAsync(user);
+    await emailService.SendConfirmationEmailAsync(user.Email.Value, token);
 
     var userDto = mapper.Map<UserDto>(user);
     var response = new RegisterUserResponse { User = userDto };

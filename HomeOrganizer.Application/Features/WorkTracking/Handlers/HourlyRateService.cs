@@ -8,32 +8,10 @@ namespace HomeOrganizer.Application.Features.WorkTracking.Handlers;
 
 public class HourlyRateService(IHourlyRateRepository hourlyRateRepository, IWorkDayRepository workDayRepository, IMapper mapper) : IHourlyRateService
 {
-  public async Task<HourlyRateResponse> CreateHourlyRateAsync(CreateHourlyRateRequest request, Guid userId)
-  {
-    var actualDate = await hourlyRateRepository.GetGreaterThanAsync(userId, request.StartDate);
-    
-    if (actualDate != null)
-      throw new InvalidOperationException("An hourly rate already exists for the given date");
-    
-    var currentRate = await hourlyRateRepository.GetCurrentHourlyRateAsync(userId);
-
-    if (currentRate != null)
-    {
-      currentRate.EffectiveTo = request.StartDate.AddDays(-1);
-      await hourlyRateRepository.UpdateAsync(currentRate);
-    }
-    
-    var entity = mapper.Map<HourlyRatePeriod>(request);
-    entity.UserId = userId;
-    
-    await hourlyRateRepository.AddAsync(entity);
-    return mapper.Map<HourlyRateResponse>(entity);
-  }
-
-  public async Task<HourlyRateResponse?> GetCurrentRateAsync(Guid userId, DateTime date)
+  public async Task<CreateHourlyRateResponse?> GetCurrentRateAsync(Guid userId, DateTime date)
   {
     var entity = await hourlyRateRepository.GetAsync(userId, date);
-    return entity == null ? null : mapper.Map<HourlyRateResponse>(entity);
+    return entity == null ? null : mapper.Map<CreateHourlyRateResponse>(entity);
   }
 
   public async Task<IList<HourlyRatesResponse>> GetHourlyRates(Guid userId)
@@ -58,7 +36,7 @@ public class HourlyRateService(IHourlyRateRepository hourlyRateRepository, IWork
 
       return new HourlyRatesResponse
       {
-          RatePerHour = entity.HourlyRate,
+          RatePerHour = entity.Rate,
           EffectiveFrom = entity.EffectiveFrom,
           EffectiveTo = entity.EffectiveTo,
           IsCurrentRate = entity.EffectiveTo == null,

@@ -9,19 +9,17 @@ public class UserRepository(HomeOrganizerDbContext context) : IUserRepository
 {
   public async Task<User?> GetByEmailAsync(string email) => await context.Users.SingleOrDefaultAsync(u => u.Email.Value == email);
   
+  public async Task<User?> GetByEmailConfirmationTokenAsync(string token) => await context.Users.SingleOrDefaultAsync(u => u.EmailConfirmationToken == token);
+  
   public async Task AddAsync(User user)
   {
     context.Users.Add(user);
     await context.SaveChangesAsync();
   }
 
-  public Task UpdateAsync(User user)
+  public async Task UpdateAsync(User user)
   {
-    throw new NotImplementedException();
-  }
-
-  public Task<User?> GetUserByTokenAsync(string token)
-  {
-    throw new NotImplementedException();
+    context.Users.Update(user);
+    await context.SaveChangesAsync();
   }
 }

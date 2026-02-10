@@ -1,10 +1,7 @@
-﻿using System.Security.Authentication;
-using HomeOrganizer.Api.Extensions;
-using HomeOrganizer.Application.Common.Models;
+﻿using HomeOrganizer.Api.Extensions;
 using HomeOrganizer.Application.DTOs.Users;
 using HomeOrganizer.Application.Features.Users.Commands;
-using HomeOrganizer.Application.Features.Users.Dtos;
-using HomeOrganizer.Application.Features.Users.Interfaces;
+using HomeOrganizer.Application.Features.Users.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Identity.Data;
 
@@ -27,62 +24,26 @@ public static class UserEndpoints
       })
       .WithValidation<RegisterUserRequest>()
       .WithName("RegisterUser");
-    
-    
-    
-    
 
     group.MapPost("login", async (
-        LoginRequest request,
-        IUserAuthenticationService userAuthenticationService) =>
+        LoginUserRequest request,
+        IMediator mediator) =>
       {
-        try
-        {
-          var result = await userAuthenticationService.LoginAsync(request);
-          return Results.Ok(result);
-        }
-        catch (InvalidCredentialException)
-        {
-          var error = new ErrorResponse
-          {
-            Message = "Nieprawidłowy email lub hasło."
-          };
-          
-          return Results.Json(error, statusCode: 401);
-        }
+        var command = new LoginUserCommand(request.Email, request.Password);
+        var result = await mediator.Send(command);
+        
+        return result.IsSuccess ? Results.Ok(result) : Results.BadRequest(result.Error);
       })
       .WithValidation<LoginRequest>()
       .WithName("LoginUser");
     
-    group.MapPost("confirmEmail", async (
-        EmailConfirmationRequest request,
-        IUserAuthenticationService userAuthenticationService) =>
-    {
-      try
-      {
-        await userAuthenticationService.ConfirmEmailAsync(request.Token, request.EmailConfirmationTokenExpiry);
-        
-        return Results.Ok(new { Message = "Email confirmed." });
-      }
-      catch (InvalidCredentialException)
-      {
-        var error = new ErrorResponse
+    group.MapGet("confirmEmail", async (string token, IMediator mediator) =>
         {
-            Message = "Nieprawidłowy lub wygasły token potwierdzenia email."
-        };
-
-        return Results.Json(error, statusCode: 400);
-      }
-      catch (InvalidOperationException ex)
-      {
-        var error = new ErrorResponse
-        {
-            Message = ex.Message
-        };
-
-        return Results.Json(error, statusCode: 400);
-      }
-    })
+          var command = new ConfirmEmailCommand(token);
+          var result = await mediator.Send(command);
+          
+          return result.IsSuccess ? Results.Ok(result) : Results.BadRequest(result.Error);
+        })
     .WithName("ConfirmEmail");
   }
 }

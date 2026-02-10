@@ -1,25 +1,34 @@
-﻿using HomeOrganizer.Application.Features.EmailInterfaces;
-using HomeOrganizer.Application.Features.RepositoryInterfaces;
-using Resend;
+﻿using MailKit.Net.Smtp;
+using HomeOrganizer.Domain.Interfaces;
+using Microsoft.Extensions.Configuration;
+using MimeKit;
 
 namespace HomeOrganizer.Infrastructure.Services;
 
-public class EmailService(IResend resend) : IEmailService
+public class EmailService(IConfiguration config) : IEmailService
 {
-  public async Task SendEmailConfirmationAsync(string receipentEmail, string subject, string body, string confirmationLink)
+  public async Task SendConfirmationEmailAsync(string email, string token)
   {
-    var message = new EmailMessage
-    {
-        From = "home.organizer.app@resend.dev",
-        To = receipentEmail,
-        Subject = subject,
-        HtmlBody = body
-    };
-    
-    await resend.EmailSendAsync(message);
+      var baseUrl = config["App:BaseUrl"];
+      var expiry = DateTime.UtcNow.AddHours(24);
+      var confirmUrl = $"{baseUrl}/confirm-email?token={token}&expiry={expiry:o}";
+      
+      var message = new MimeMessage();
+      message.From.Add(new MailboxAddress("HomeOrganizer", config["Smtp:FromEmail"]!));
+      message.To.Add(new MailboxAddress("", email));
+      message.Subject = "Potwierdź swój email";
+      
+      message.Body = new TextPart("plain") { Text = BuildEmailConfirmationBody(confirmUrl) };
+
+      using var client = new SmtpClient();
+      
+      await client.ConnectAsync(config["Smtp:Host"]!, 587, MailKit.Security.SecureSocketOptions.StartTls);
+      await client.AuthenticateAsync(config["Smtp:Username"]!, config["Smtp:Password"]!);
+      await client.SendAsync(message);
+      await client.DisconnectAsync(true);
   }
 
-  public string BuildEmailConfirmationBody(string confirmationLink)
+  private string BuildEmailConfirmationBody(string confirmationLink)
   {
       return $@"
             <!DOCTYPE html>
@@ -68,10 +77,5 @@ public class EmailService(IResend resend) : IEmailService
                 </div>
             </body>
             </html>";
-  }
-
-  public string GetEmailConfirmationSubject()
-  {
-      return "Potwierdź swój email - HomeOrganizer";
   }
 }

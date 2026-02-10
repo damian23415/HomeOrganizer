@@ -8,7 +8,7 @@ namespace HomeOrganizer.Infrastructure.Persistence.Repositories.WorkTracking;
 
 public class HourlyRateRepository(IDbConnection dbConnection) : IHourlyRateRepository
 {
-  public async Task<HourlyRatePeriod?> GetAsync(Guid userId, DateTime date)
+  public async Task<HourlyRate?> GetAsync(Guid userId, DateTime date)
   {
     const string sql = @"
       SELECT *
@@ -19,11 +19,11 @@ public class HourlyRateRepository(IDbConnection dbConnection) : IHourlyRateRepos
       ORDER BY ""EffectiveFrom"" DESC
       LIMIT 1";
 
-    return await dbConnection.QuerySingleOrDefaultAsync<HourlyRatePeriod>(sql,
+    return await dbConnection.QuerySingleOrDefaultAsync<HourlyRate>(sql,
       new { UserId = userId, CurrentDate = date });
   }
 
-  public async Task<HourlyRatePeriod?> GetGreaterThanAsync(Guid userId, DateTime date)
+  public async Task<HourlyRate?> GetGreaterThanAsync(Guid userId, DateTime date)
   {
     const string sql = @"
       SELECT *
@@ -33,11 +33,11 @@ public class HourlyRateRepository(IDbConnection dbConnection) : IHourlyRateRepos
       ORDER BY ""EffectiveFrom"" ASC
       LIMIT 1";
     
-    return await dbConnection.QuerySingleOrDefaultAsync<HourlyRatePeriod>(sql,
+    return await dbConnection.QuerySingleOrDefaultAsync<HourlyRate>(sql,
         new { UserId = userId, Date = date });
   }
 
-  public async Task<IList<HourlyRatePeriod>> GetHourlyRates(Guid userId)
+  public async Task<IList<HourlyRate>> GetHourlyRates(Guid userId)
   {
     const string sql = @"
       SELECT *
@@ -45,10 +45,10 @@ public class HourlyRateRepository(IDbConnection dbConnection) : IHourlyRateRepos
       WHERE ""UserId"" = @UserId
       ORDER BY ""EffectiveFrom"" DESC";
     
-    return (await dbConnection.QueryAsync<HourlyRatePeriod>(sql, new { UserId = userId })).ToList();
+    return (await dbConnection.QueryAsync<HourlyRate>(sql, new { UserId = userId })).ToList();
   }
 
-  public async Task<HourlyRatePeriod?> GetCurrentHourlyRateAsync(Guid userId)
+  public async Task<HourlyRate?> GetCurrentHourlyRateAsync(Guid userId)
   {
     const string sql = @"
       SELECT *
@@ -56,19 +56,19 @@ public class HourlyRateRepository(IDbConnection dbConnection) : IHourlyRateRepos
       WHERE ""UserId"" = @UserId
       AND ""EffectiveTo"" IS NULL";
     
-    return await dbConnection.QuerySingleOrDefaultAsync<HourlyRatePeriod>(sql, new { UserId = userId });
+    return await dbConnection.QuerySingleOrDefaultAsync<HourlyRate>(sql, new { UserId = userId });
   }
 
-  public async Task AddAsync(HourlyRatePeriod hourlyRatePeriod)
+  public async Task AddAsync(HourlyRate hourlyRate)
   {
     const string sql = @"
       INSERT INTO ""HourlyRatePeriods"" (""Id"", ""UserId"", ""HourlyRate"", ""EffectiveFrom"", ""EffectiveTo"")
       VALUES (@Id, @UserId, @HourlyRate, @EffectiveFrom, @EffectiveTo);";
     
-    await dbConnection.ExecuteAsync(sql, hourlyRatePeriod);
+    await dbConnection.ExecuteAsync(sql, hourlyRate);
   }
 
-  public async Task UpdateAsync(HourlyRatePeriod hourlyRatePeriod)
+  public async Task UpdateAsync(HourlyRate hourlyRate)
   {
     const string sql = @"
       UPDATE ""HourlyRatePeriods""
@@ -77,6 +77,6 @@ public class HourlyRateRepository(IDbConnection dbConnection) : IHourlyRateRepos
           ""EffectiveTo"" = @EffectiveTo
       WHERE ""Id"" = @Id;";
     
-    await dbConnection.ExecuteAsync(sql, hourlyRatePeriod);
+    await dbConnection.ExecuteAsync(sql, hourlyRate);
   }
 }
