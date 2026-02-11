@@ -22,7 +22,6 @@ public static class ApplicationExtensions
     services.AddValidatorsFromAssemblyContaining<LoginUserRequestValidator>();
     services.AddValidatorsFromAssemblyContaining<CreateHourlyRateRequestValidator>();
     
-
     return services;
   }
 }

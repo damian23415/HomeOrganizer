@@ -2,6 +2,7 @@
 using HomeOrganizer.Application.Common.Models;
 using HomeOrganizer.Application.Features.WorkTracking.Commands;
 using HomeOrganizer.Application.Features.WorkTracking.Dtos;
+using HomeOrganizer.Application.Features.WorkTracking.Queries;
 using MediatR;
 
 namespace HomeOrganizer.Api.WorkTracking;
@@ -28,102 +29,58 @@ public static class WorkTrackingEndpoints
       .WithName("CreateHourlyRate");
     
     group.MapGet("hourlyRate/{date:datetime}", async (
-            IHourlyRateService hourlyRateService, 
+            IMediator mediator, 
             HttpContext httpContext, 
             DateTime date) =>
         {
-          try
-          {
-            var userId = httpContext.GetCurrentUserId();
-            var response = await hourlyRateService.GetCurrentRateAsync(userId, date);
-        
-            return Results.Ok(response);
-          }
-          catch (Exception ex)
-          {
-            var error = new ErrorResponse()
-            {
-                Message = ex.Message,
-            };
-
-            return Results.Json(error, statusCode: 401);
-          }
+          var userId = httpContext.GetCurrentUserId();
+          var query = new GetCurrentHourlyRateQuery(userId, date);
+          var result = await mediator.Send(query);
+          
+          return result.IsSuccess ? Results.Ok(result.Value) : Results.BadRequest(result.Error);
         })
         .WithCurrentUser()
         .WithName("GetCurrentHourlyRate");
     
     group.MapGet("hourlyRates", async (
-        IHourlyRateService hourlyRateService,
+        IMediator mediator,
         HttpContext context) =>
         {
-          try
-          {
-            var userId = context.GetCurrentUserId();
-            var result = await hourlyRateService.GetHourlyRates(userId);
+          var userId = context.GetCurrentUserId();
+          var query = new GetAllHourlyRatesQuery(userId);
+          var result = await mediator.Send(query);
           
-            return Results.Ok(result);
-          }
-          catch (UnauthorizedAccessException ex)
-          {
-            var error = new ErrorResponse()
-            {
-                Message = ex.Message,
-            };
-          
-            return Results.Json(error, statusCode: 401);
-          }
+          return result.IsSuccess ? Results.Ok(result.Value) : Results.BadRequest(result.Error);
         })
         .WithCurrentUser()
         .WithName("GetHourlyRates");
     
     group.MapPost("workDay", async (
         CreateWorkDayRequest request,
-        IWorkDayService workDayService,
+        IMediator mediator,
         HttpContext httpContext) =>
-    {
-      try
-      {
-        var userId = httpContext.GetCurrentUserId();
-        var result = await workDayService.CreateWorkDayAsync(request, userId);
-        
-        return Results.Ok(result);
-      }
-      catch (UnauthorizedAccessException ex)
-      {
-        var error = new ErrorResponse()
         {
-          Message = ex.Message,
-        };
+          var userId = httpContext.GetCurrentUserId();
+          var command = new CreateWorkDayCommand(userId, request.StartTime, request.EndTime, request.Date);
+          var result = await mediator.Send(command);
           
-        return Results.Json(error, statusCode: 401);
-      }
-    })
-    .WithValidation<CreateWorkDayRequest>()
-    .WithCurrentUser()
-    .WithName("CreateWorkDay");
+          return result.IsSuccess ? Results.Ok(result.Value) : Results.BadRequest(result.Error);
+        })
+        .WithValidation<CreateWorkDayRequest>()
+        .WithCurrentUser()
+        .WithName("CreateWorkDay");
 
     group.MapGet("workDays/{year:int}/{month:int}", async (
         int year,
         int month,
-        IWorkDayService workDayService,
+        IMediator mediator,
         HttpContext httpContext) =>
       {
-        try
-        {
-          var userId = httpContext.GetCurrentUserId();
-          var result = await workDayService.GetWorkDaysByMonthAsync(year, month, userId);
-          
-          return Results.Ok(result);
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-          var error = new ErrorResponse()
-          {
-            Message = ex.Message,
-          };
-
-          return Results.Json(error, statusCode: 401);
-        }
+        var userId = httpContext.GetCurrentUserId();
+        var query = new GetWorkDaysByMonthQuery(userId, year, month);
+        var result = await mediator.Send(query);
+        
+        return result.IsSuccess ? Results.Ok(result.Value) : Results.BadRequest(result.Error);
       })
       .WithCurrentUser()
       .WithName("GetWorkDaysByMonth");

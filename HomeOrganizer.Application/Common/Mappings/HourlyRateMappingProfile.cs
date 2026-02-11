@@ -9,8 +9,13 @@ public class HourlyRateMappingProfile : Profile
   public HourlyRateMappingProfile()
   {
     CreateMap<HourlyRate, CreateHourlyRateResponse>()
-        .ForMember(d => d.EffectiveFrom, opt => opt.MapFrom(s => s.EffectiveFrom))
-        .ForMember(d => d.EffectiveTo, opt => opt.MapFrom(s => s.EffectiveTo))
-        .ForMember(d => d.Rate, opt => opt.MapFrom(s => s.Rate));
+        .ForMember(dest => dest.EffectiveFrom, opt => opt.MapFrom(src => src.EffectiveFrom))
+        .ForMember(dest => dest.EffectiveTo, opt => opt.MapFrom(src => src.EffectiveTo))
+        .ForMember(dest => dest.Rate, opt => opt.MapFrom(src => src.Rate));
+    
+    CreateMap<HourlyRate, GetHourlyRateResponse>()
+        .ForMember(dest => dest.EffectiveFrom, opt => opt.MapFrom(src => src.EffectiveFrom))
+        .ForMember(dest => dest.EffectiveTo, opt => opt.MapFrom(src => src.EffectiveTo))
+        .ForMember(dest => dest.Rate, opt => opt.MapFrom(src => src.Rate));
   }
 }

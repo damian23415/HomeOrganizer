@@ -17,8 +17,4 @@
         <ProjectReference Include="..\HomeOrganizer.Domain\HomeOrganizer.Domain.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Features\WorkTracking\Queries\" />
-    </ItemGroup>
-
 </Project>

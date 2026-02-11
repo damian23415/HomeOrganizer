@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\HomeOrganizer.Application\HomeOrganizer.Application.csproj" />
+      <ProjectReference Include="..\HomeOrganizer.Infrastructure\HomeOrganizer.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

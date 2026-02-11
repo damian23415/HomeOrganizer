@@ -22,6 +22,20 @@ public class HourlyRateRepository(HomeOrganizerDbContext context) : IHourlyRateR
                                   && x.EffectiveTo == null);
   }
 
+  public async Task<List<HourlyRate>> GetAllHourlyRatesAsync(Guid userId) => 
+      await context.HourlyRates
+          .Where(x => x.UserId == userId)
+          .OrderByDescending(x => x.EffectiveFrom)
+          .ToListAsync();
+
+  public async Task<HourlyRate?> GetAsync(Guid userId, DateTime givenDate)
+  {
+    return await context.HourlyRates
+        .SingleOrDefaultAsync(x => x.UserId == userId
+                                  && x.EffectiveFrom <= givenDate
+                                  && (x.EffectiveTo == null || x.EffectiveTo >= givenDate));
+  }
+
   public async Task UpdateAsync(HourlyRate hourlyRate)
   {
     context.HourlyRates.Update(hourlyRate);

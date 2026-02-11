@@ -21,6 +21,7 @@ public static class InfrastructureExtensions
     // Repositories
     services.AddScoped<IUserRepository, UserRepository>();
     services.AddScoped<IHourlyRateRepository, HourlyRateRepository>();
+    services.AddScoped<IWorkDayRepository, WorkDayRepository>();
     
     // Services
     services.AddScoped<IPasswordHasher, PasswordHasher>();

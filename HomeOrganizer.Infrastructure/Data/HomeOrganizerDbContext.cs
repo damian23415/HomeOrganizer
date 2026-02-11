@@ -1,5 +1,6 @@
 ﻿using HomeOrganizer.Domain.Entities.Billings;
 using HomeOrganizer.Domain.Entities.Users;
+using HomeOrganizer.Domain.Entities.WorkTracking;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeOrganizer.Infrastructure.Data;
@@ -10,6 +11,7 @@ public class HomeOrganizerDbContext : DbContext
 
   public DbSet<User> Users { get; set; } = null!;
   public DbSet<HourlyRate> HourlyRates { get; set; } = null!;
+  public DbSet<WorkDay> WorkDays { get; set; } = null!;
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
@@ -25,6 +27,12 @@ public class HomeOrganizerDbContext : DbContext
       entity.HasKey(e => e.Id);
       entity.Property(h => h.Rate).HasColumnType("decimal(18,2)");
       entity.HasOne<User>().WithMany().HasForeignKey(h => h.UserId);
+    });
+
+    modelBuilder.Entity<HourlyRate>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.HasOne<User>().WithMany().HasForeignKey(w => w.UserId);
     });
   }
 }
