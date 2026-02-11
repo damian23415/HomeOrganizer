@@ -86,10 +86,8 @@ export const authApi = {
     })
   },
 
-  confirmToken: async (data) => {
-    return request('/users/confirmEmail', {
-      method: 'POST',
-      body: JSON.stringify(data)
+  confirmToken: async (token, expiry) => {
+    return request(`/users/confirmEmail?token=${token}&expiry=${encodeURIComponent(expiry)}`, {
     });
   }
 }
@@ -120,7 +118,7 @@ export const workTimeApi = {
 export const hourlyRateApi = {
   // pobierz dane o aktualnej stawce
   getHourlyRate: async () => {
-    const today = new Date().toISOString().split('T')[0]
+    const today = new Date().toISOString()
     
     return request(`/worktracking/hourlyRate/${today}`)
   },

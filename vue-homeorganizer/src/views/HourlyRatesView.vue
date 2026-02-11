@@ -6,7 +6,7 @@
     <div class="current-rate-section">
       <div v-if="currentRate" class="current-rate-card">
         <div class="badge-active">✅ Aktualna stawka</div>
-        <div class="rate-amount">{{ currentRate.ratePerHour }} zł/h</div>
+        <div class="rate-amount">{{ currentRate.rate }} zł/h</div>
         <div class="rate-info">
           <p>📅 Obowiązuje od: {{ currentRate.effectiveFrom }}</p>
           <p>💰 Zarobki w tym okresie: {{ currentRate.totalEarnings }} zł</p>
@@ -59,7 +59,7 @@
           <span class="rate-value">{{ rate.ratePerHour}}zł/h</span>
         </div>
         <div class="card-body">
-          <p>📅 {{ rate.effectiveFrom }} - {{ rate.effectiveTo }} ({{ rate.totalHours / 24}} dni)</p>
+          <p>📅 {{ rate.effectiveFrom }} - {{ rate.effectiveTo }} ({{ rate.totalHours / 8}} dni pracy)</p>
           <p>💰 Zarobki: {{ rate.totalEarnings }} zł</p>
         </div>
       </div>
@@ -125,11 +125,11 @@ const handleAddRate = async () => {
         }
 
         const payload = {
-            hourlyRate: parseFloat(newRate.value.amount),
-            startDate: newRate.value.effectiveFrom
+            rate: parseFloat(newRate.value.amount),
+            effectiveFrom: new Date(newRate.value.effectiveFrom).toISOString()
         }
 
-        const response = await api.hourlyRate.save(payload);
+        await api.hourlyRate.save(payload);
 
         currentRate.value = {
             rate: newRate.value.amount,

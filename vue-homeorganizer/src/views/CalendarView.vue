@@ -264,7 +264,7 @@ const saveModalData = async () => {
 
   try {
     const payload = {
-      date: dateKey,
+      date: new Date(dateKey).toISOString(),
       startTime: combineDateAndTime(selectedDay.value, modalData.value.startTime),
       endTime: combineDateAndTime(selectedDay.value, modalData.value.endTime)
     }

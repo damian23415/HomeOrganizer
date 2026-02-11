@@ -75,8 +75,8 @@ const handleLogin = async () => {
     
     // Backend zwraca: { token: string, user: UserDto }
     // Sprawdź czy backend używa PascalCase czy camelCase
-    const token = response.token || response.Token
-    const user = response.user || response.User
+    const token = response.value.token || response.Token
+    const user = response.value.user || response.User
     
     if (!token) {
       throw new Error('Brak tokena w odpowiedzi')

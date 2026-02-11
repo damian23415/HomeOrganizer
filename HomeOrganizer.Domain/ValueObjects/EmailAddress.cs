@@ -4,6 +4,11 @@ public class EmailAddress : IEquatable<EmailAddress>
 {
   public string Value { get; }
 
+  public EmailAddress()
+  {
+    // EF
+  }
+
   public EmailAddress(string value)
   {
     if (string.IsNullOrWhiteSpace(value) || !value.Contains("@"))

@@ -34,10 +34,10 @@ public static class UserEndpoints
         
         return result.IsSuccess ? Results.Ok(result) : Results.BadRequest(result.Error);
       })
-      .WithValidation<LoginRequest>()
+      .WithValidation<LoginUserRequest>()
       .WithName("LoginUser");
     
-    group.MapGet("confirmEmail", async (string token, IMediator mediator) =>
+    group.MapGet("confirmEmail", async (string token, DateTime expiry, IMediator mediator) =>
         {
           var command = new ConfirmEmailCommand(token);
           var result = await mediator.Send(command);

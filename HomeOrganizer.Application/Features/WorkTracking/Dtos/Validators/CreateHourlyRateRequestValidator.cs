@@ -8,14 +8,14 @@ public class CreateHourlyRateRequestValidator : AbstractValidator<CreateHourlyRa
   public CreateHourlyRateRequestValidator()
   {
     RuleFor(x => x.Rate)
+      .NotNull()
+      .WithMessage("Hourly rate is required.")
       .GreaterThan(0)
       .WithMessage("Hourly rate must be greater than zero.");
-    
+
     RuleFor(x => x.EffectiveFrom)
-      .NotEmpty()
-      .WithMessage("Effective from date is required.")
-      .LessThanOrEqualTo(DateTime.UtcNow)
-      .WithMessage("Effective from date cannot be in the future.");
+        .NotEmpty()
+        .WithMessage("Effective from date is required.");
     
     RuleFor(x => x.EffectiveTo)
       .GreaterThan(x => x.EffectiveFrom)

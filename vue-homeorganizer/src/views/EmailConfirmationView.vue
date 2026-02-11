@@ -80,13 +80,7 @@ const confirmToken = async () => {
     status.value = 'loading'
     loading.value = true
     try {
-
-        const payload = {
-            token: token,
-            emailConfirmationTokenExpiry: expiryDate
-        };
-
-         const response = await api.auth.confirmToken(payload);
+         const response = await api.auth.confirmToken(token, expiryDate.replace(/'/g, ''));
         
          if (response) {
             status.value = 'success'
