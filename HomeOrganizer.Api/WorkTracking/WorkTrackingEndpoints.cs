@@ -19,7 +19,11 @@ public static class WorkTrackingEndpoints
         HttpContext httpContext) =>
     {
       var userId = httpContext.GetCurrentUserId();
-      var command = new CreateHourlyRateCommand(userId, request.Rate, request.EffectiveFrom, request.EffectiveTo);
+
+      ICreateHourlyRateCommand command = request.IsHistorical 
+          ? new CreateHistoricalHourlyRateCommand(userId, request.Rate, request.EffectiveFrom, request.EffectiveTo) 
+          : new CreateCurrentOrFutureHourlyRateCommand(userId, request.Rate, request.EffectiveFrom, request.EffectiveTo);
+      
       var result = await mediator.Send(command);
       
       return result.IsSuccess ? Results.Ok(result.Value) : Results.BadRequest(result.Error);

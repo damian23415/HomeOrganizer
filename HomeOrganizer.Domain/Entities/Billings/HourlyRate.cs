@@ -12,22 +12,23 @@ public class HourlyRate : BaseEntity
   
   private HourlyRate() { } // EF
   
-  public HourlyRate(Guid userId, Money hourlyRate, DateTime effectiveFrom)
+  public HourlyRate(Guid userId, Money hourlyRate, DateTime effectiveFrom, DateTime? effectiveTo = null)
   {
     if (userId == Guid.Empty) 
       throw new ArgumentException("UserId required.", nameof(userId));
     
-    if (effectiveFrom < DateTime.UtcNow.Date) 
-      throw new ArgumentException("EffectiveFrom cannot be in the past.", nameof(hourlyRate));
+    if (effectiveTo.HasValue && effectiveTo <= EffectiveFrom) 
+      throw new BillingDomainException("EffectiveTo must be after EffectiveFrom.");
     
     UserId = userId;
     Rate = hourlyRate ?? throw new ArgumentNullException(nameof(hourlyRate));
     EffectiveFrom = effectiveFrom;
+    EffectiveTo = effectiveTo;
   }
   
   public void SetEffectiveTo(DateTime effectiveTo)
   {
-    if (effectiveTo <= EffectiveFrom) 
+    if (effectiveTo.Date < EffectiveFrom) 
       throw new BillingDomainException("EffectiveTo must be after EffectiveFrom.");
     
     EffectiveTo = effectiveTo;

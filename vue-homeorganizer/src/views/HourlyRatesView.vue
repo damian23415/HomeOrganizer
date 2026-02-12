@@ -124,18 +124,32 @@ const handleAddRate = async () => {
             return
         }
 
+        const today = new Date().setHours(0, 0, 0, 0);
+        const isHistorical = new Date(newRate.value.effectiveFrom) < today
+        
+        if (isHistorical) {
+          newRate.value.effectiveTo = new Date('2026-01-31')
+        }
+
+        console.log(today)
+        console.log(newRate.value.effectiveFrom)
+        console.log(new Date(newRate.value.effectiveFrom))
         const payload = {
             rate: parseFloat(newRate.value.amount),
-            effectiveFrom: new Date(newRate.value.effectiveFrom).toISOString()
+            effectiveFrom: new Date(newRate.value.effectiveFrom).toISOString(),
+            isHistorical: isHistorical,
+            effectiveTo: newRate.value.effectiveTo
         }
 
         await api.hourlyRate.save(payload);
 
-        currentRate.value = {
+        if (!isHistorical) {
+          currentRate.value = {
             rate: newRate.value.amount,
             startDate: formatDate(newRate.value.effectiveFrom)
+          }
         }
-
+        
         newRate.value = {
             amount: '',
             effectiveFrom: ''

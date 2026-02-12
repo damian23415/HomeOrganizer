@@ -12,7 +12,7 @@ public class GetAllHourlyRatesHandler(
 {
   public async Task<Result<IList<GetAllHourlyRatesResponse>>> Handle(GetAllHourlyRatesQuery request, CancellationToken cancellationToken)
   {
-    var allHourlyRates = await hourlyRateRepository.GetAllHourlyRatesAsync(request.UserId);
+    var allHourlyRates = await hourlyRateRepository.GetHourlyRatesByUserIdAsync(request.UserId);
     
     if (!allHourlyRates.Any())
       return Result<IList<GetAllHourlyRatesResponse>>.Failure("No hourly rates found for the user.");
